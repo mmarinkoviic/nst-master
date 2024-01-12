@@ -1,0 +1,69 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+   <!-- kreiraj tabelu depratment-->
+    <changeSet id="create-department" author="m.marinkovic">
+        <sqlFile path="ddl/create-department.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+   <!-- kreiraj tabelu subject-->
+    <changeSet id="create-subject" author="m.marinkovic">
+        <sqlFile path="ddl/create-subject.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="create-academic-title" author="m.marinkovic">
+        <sqlFile path="ddl/create-academic-title.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="create-education-title" author="m.marinkovic">
+        <sqlFile path="ddl/create-education-title.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="create-scientific-field" author="m.marinkovic">
+        <sqlFile path="ddl/create-scientific-field.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="create-member" author="m.marinkovic">
+        <sqlFile path="ddl/create-member.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="create-academic-title-history" author="m.marinkovic">
+        <sqlFile path="ddl/create-academic-title-history.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="create-management" author="m.marinkovic">
+        <sqlFile path="ddl/create-management.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+    
+    <!-- popuni tabelu depratment-->
+    <changeSet id="init-department" author="m.marinkovic">
+        <sqlFile path="dml/init-department.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+    
+    
+    <changeSet id="init-subject" author="m.marinkovic">
+        <sqlFile path="dml/init-subject.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="init-academic-title" author="m.marinkovic">
+        <sqlFile path="dml/init-academic-title.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="init-education-title" author="m.marinkovic">
+        <sqlFile path="dml/init-education-title.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="init-scientific-field" author="m.marinkovic">
+        <sqlFile path="dml/init-scientific-field.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="init-member" author="m.marinkovic">
+        <sqlFile path="dml/init-member.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="init-academic-title-history" author="m.marinkovic">
+        <sqlFile path="dml/init-academic-title-history.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,35 @@
+Department -  je katedra koja ima svoje ime  i skraćeni naziv.
+Department (name, short_name)
+
+Subject -  je predmet koji ima naziv, broj esbp-a i katedru kojoj pripada.
+Subject (id,name,esbp, department_id)
+---------------------------------------
+
+Member - predstavlja člana Katedre (Department-a) za koga se čuvaju sledeći podaci
+ime, prezime, akdemsko zvanje, stepen stručne spreme, uža naučna oblast.
+Member (firstnama, lastname, academic_title, education_title, scientific_field)
+
+academic_title, education_title i scientific_field predsatvljaju šifarnike.
+
+Department može da ima više članova (Member).
+Member može biti član samo jednog Department-a.
+Za svakog člana se čuva istorijat promena zvanja (academic_title).
+AcademicTitleHistory (startDate, endDate, academic_title, scientific field).
+
+Department ima svog rukovodioca i sekretara koji se biraju na neki vremenski period.
+Potrebno je obezbediti čuvanje istorijata promene rukovodioca i sekretara za Katedru.
+
+---------------------------------------
+Za svaku školsku godinu definiše se pokrivenost nastave na nekom predmetu.
+Oblik nastave: predavanja, vežbe ili laboratorijeske vežbe
+Nastavnik može biti angažovan na više predmeta,.
+Nastavnik na jednom predmetu može držati više oblika nastave.
+
+Za svaku školsku godinu se definiše plan izvođenja nastave tako
+što se na svakom predmetu definiše FOND časova za svaki oblik nastave, a nakon toga
+se planirani časovi raspoređuju prema nastavnicima koji su na pokrivenosti nastave.
+---------------------------------------
+
+
+
+
