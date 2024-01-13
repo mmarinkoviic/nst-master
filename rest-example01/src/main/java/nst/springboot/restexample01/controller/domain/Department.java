@@ -14,7 +14,7 @@ public class Department implements Serializable {
     private Long id;
     
     @NotEmpty(message = "Name is an obligatory field!")
-    @Size(min = 2, max = 10, message = "Length of the name must be in the range from 2 to 10!")
+    @Size(min = 2, max = 30, message = "Length of the name must be in the range from 2 to 30!")
     @Column(name = "name")
     private String name;
 

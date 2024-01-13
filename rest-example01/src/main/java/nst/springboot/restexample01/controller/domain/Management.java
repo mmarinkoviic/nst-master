@@ -1,6 +1,7 @@
 package nst.springboot.restexample01.controller.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
@@ -20,7 +21,7 @@ public class Management implements Serializable {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
-    @NotNull(message = "Role is required and must be 'manager' or 'secretary'.")
+    @NotEmpty(message = "Role is required and must be 'manager' or 'secretary'.")
     private String role;
     @NotNull(message = "Start date is obligatory.")
     private LocalDate startDate;

@@ -18,7 +18,7 @@ public class Member implements Serializable {
     @Column(name = "first_name")
     private String firstName;
     @NotEmpty(message = "Last name is obligatory field!")
-    @Size(min = 2, max = 15, message = "Length of the last name must be in the range from 2 to 10.")
+    @Size(min = 2, max = 15, message = "Length of the last name must be in the range from 2 to 15.")
     @Column(name = "last_name")
     private String lastName;
     @NotNull(message = "Academic title is required!")

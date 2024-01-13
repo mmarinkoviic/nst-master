@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class DepartmentDto implements Serializable{
     private Long id;
     @NotNull
-    @Size(min = 2,max = 10, message = "Length of the name must be in the range from 2 to 10!")
+    @Size(min = 2,max = 30, message = "Length of the name must be in the range from 2 to 30!")
     private String name;
 
     public DepartmentDto() {
