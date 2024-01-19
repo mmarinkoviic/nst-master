@@ -11,5 +11,6 @@ public interface ManagementRepository extends JpaRepository<Management,Long> {
     List<Management> findByEndDateIsNullAndRole(String role);
     List<Management> findByEndDateIsNullAndDepartmentName(String name);
     Optional<Management> findByEndDateIsNullAndDepartmentNameAndRole(String name, String role);
+    Optional<Management> findByEndDateIsNullAndDepartmentIdAndRole(Long id, String role);
     List<Management> findByMemberId(Long id);
 }

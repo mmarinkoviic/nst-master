@@ -3,16 +3,21 @@ package nst.springboot.restexample01.controller.service.impl;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import jakarta.persistence.EntityNotFoundException;
 import nst.springboot.restexample01.controller.domain.Department;
+import nst.springboot.restexample01.controller.domain.Management;
 import nst.springboot.restexample01.controller.domain.Member;
 import nst.springboot.restexample01.controller.domain.Subject;
 import nst.springboot.restexample01.controller.repository.DepartmentRepository;
+import nst.springboot.restexample01.controller.repository.ManagementRepository;
 import nst.springboot.restexample01.controller.repository.MemberRepository;
 import nst.springboot.restexample01.controller.repository.SubjectRepository;
 import nst.springboot.restexample01.controller.service.DepartmentService;
 import nst.springboot.restexample01.converter.impl.DepartmentConverter;
+import nst.springboot.restexample01.converter.impl.MemberConverter;
+import nst.springboot.restexample01.converter.impl.SubjectConverter;
 import nst.springboot.restexample01.dto.DepartmentDto;
+import nst.springboot.restexample01.dto.MemberDto;
+import nst.springboot.restexample01.dto.SubjectDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,16 +28,25 @@ public class DepartmentServiceImpl implements DepartmentService {
     private DepartmentRepository departmentRepository;
     private SubjectRepository subjectRepository;
     private MemberRepository memberRepository;
+    private ManagementRepository managementRepository;
+    private MemberConverter memberConverter;
+    private SubjectConverter subjectConverter;
 
     public DepartmentServiceImpl(
             DepartmentRepository departmentRepository,
             DepartmentConverter departmentConverter,
             SubjectRepository subjectRepository,
-            MemberRepository memberRepository) {
+            MemberRepository memberRepository,
+            ManagementRepository managementRepository,
+            MemberConverter memberConverter,
+            SubjectConverter subjectConverter) {
         this.departmentRepository = departmentRepository;
         this.departmentConverter = departmentConverter;
         this.subjectRepository = subjectRepository;
         this.memberRepository = memberRepository;
+        this.managementRepository = managementRepository;
+        this.memberConverter = memberConverter;
+        this.subjectConverter = subjectConverter;
     }
 
     @Override
@@ -62,25 +76,11 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public void delete(String name) throws Exception{
-        Department department = departmentRepository.findByName(name).orElseThrow(()->new Exception("Department does not exist!"));
-        List<Subject> subjectList = subjectRepository.findByDepartmentName(name);
-        List<Member> memberList = memberRepository.findByDepartmentName(name);
-        if(subjectList.isEmpty() && memberList.isEmpty()){
-            departmentRepository.delete(department);
-        }else{
-            throw new Exception("Department is not empty. In order to delete department, it must be empty!");
-        }
-    }
-
-    @Override
     @Transactional
-    public void update(DepartmentDto departmentDto) throws Exception {
-        Long id = departmentDto.getId();
-        departmentRepository.findById(id).orElseThrow(()->new Exception("Department with id " + id +" not found."));
-
-        Department department = departmentRepository.findById(id).get();
-        department.setName(departmentDto.getName());
+    public void update(Long id, String newName) throws Exception {
+        if(departmentRepository.findByName(newName).isPresent()){throw new Exception("Department "+ newName+ " already exist!");}
+        Department department = departmentRepository.findById(id).orElseThrow(()->new Exception("Department with id " + id +" not found."));
+        department.setName(newName);
         departmentRepository.save(department);
     }
 
@@ -91,16 +91,42 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<String> getAll() {
-        return departmentRepository
-                .findAll()
-                .stream().map(entity -> departmentConverter.toDto(entity).toString()).sorted()
-                .collect(Collectors.toList());
+    public MemberDto getSecretary(Long id) throws Exception {
+        departmentRepository.findById(id).orElseThrow(()->new Exception("Department does not exist!"));
+        Management management = managementRepository.findByEndDateIsNullAndDepartmentIdAndRole(id,"secretary")
+                .orElseThrow(()->new Exception("Currently, department does not have a handler!"));
+        return memberConverter.toDto(management.getMember());
     }
 
     @Override
-    public DepartmentDto findByName(String name) throws Exception {
-        Department department = departmentRepository.findByName(name).orElseThrow(()->new Exception("Department does not exist!"));
-        return departmentConverter.toDto(department);
+    public MemberDto getHandler(Long id) throws Exception {
+        departmentRepository.findById(id).orElseThrow(()->new Exception("Department does not exist!"));
+        Management management = managementRepository.findByEndDateIsNullAndDepartmentIdAndRole(id,"handler")
+                .orElseThrow(()->new Exception("Currently, department does not have a handler!"));
+        return memberConverter.toDto(management.getMember());
     }
+
+    @Override
+    public List<SubjectDto> getSubjects(Long id) throws Exception {
+        departmentRepository.findById(id).orElseThrow(()->new Exception("Department does not exist!"));
+        List<Subject> subjectList = subjectRepository.findByDepartmentId(id);
+        if(subjectList.isEmpty()){throw new Exception("Department does not have subjects!");}
+        return subjectList.stream().map(subject -> subjectConverter.toDto(subject)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MemberDto> getMembers(Long id) throws Exception {
+        departmentRepository.findById(id).orElseThrow(()->new Exception("Department does not exist!"));
+        List<Member> memberList = memberRepository.findByDepartmentId(id);
+        if(memberList.isEmpty()){throw new Exception("Department does not have members!");}
+        return memberList.stream().map(member -> memberConverter.toDto(member)).collect(Collectors.toList());}
+
+    @Override
+    public List<DepartmentDto> getAll() {
+        return departmentRepository
+                .findAll()
+                .stream().map(entity -> departmentConverter.toDto(entity))
+                .collect(Collectors.toList());
+    }
+
 }

@@ -10,6 +10,7 @@ public interface AcademicTitleHistoryRepository extends JpaRepository<AcademicTi
     List<AcademicTitleHistory> findByScientificFieldScfField(String scientificField);
     List<AcademicTitleHistory> findByEndDateIsNull();
     List<AcademicTitleHistory> findByEndDateIsNullAndAcademicTitleTitle(String academicTitle);
+    List<AcademicTitleHistory> findByMemberId(Long memberId);
     Optional<AcademicTitleHistory> findByEndDateIsNullAndMemberId (Long memberId);
     Optional<AcademicTitleHistory> findByMemberFirstNameAndMemberLastNameAndAcademicTitleTitleAndScientificFieldScfField
             (String firstName, String lastName, String academicTitle, String scientificField);

@@ -1,7 +1,9 @@
 package nst.springboot.restexample01.controller;
 
 import jakarta.validation.Valid;
+import nst.springboot.restexample01.controller.domain.AcademicTitleHistory;
 import nst.springboot.restexample01.controller.service.MemberService;
+import nst.springboot.restexample01.dto.AcademicTitleHistoryDto;
 import nst.springboot.restexample01.dto.MemberDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,8 @@ public class MemberController {
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<List<String>> getAll() {
-        List<String> members = memberService.getAll();
+    public ResponseEntity<List<MemberDto>> getAll() {
+        List<MemberDto> members = memberService.getAll();
         return new ResponseEntity<>(members, HttpStatus.OK);
     }
 
@@ -28,21 +30,10 @@ public class MemberController {
         return memberService.findById(id);
     }
 
-    @GetMapping("/find-by-name-and-surname")
-    public MemberDto findByNameAndSurname (@RequestParam("First Name") String firstName,
-                                           @RequestParam("Last Name") String lastName) throws Exception{
-        return memberService.findByFirstLastName(firstName,lastName);
-    }
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> delete(@RequestParam("ID") Long id) throws Exception {
         memberService.delete(id);
-        return new ResponseEntity<>("Member removed!", HttpStatus.OK);
-    }
-    @DeleteMapping("/delete-name-surname")
-    public ResponseEntity<String> delete(@RequestParam("First Name") String firstName,
-                                         @RequestParam("Last Name") String lastName) throws Exception {
-        memberService.delete(firstName,lastName);
         return new ResponseEntity<>("Member removed!", HttpStatus.OK);
     }
 
@@ -62,10 +53,15 @@ public class MemberController {
         memberService.update(memberDto);
         return new ResponseEntity<>("Member updated!",HttpStatus.OK);
     }
+    @GetMapping("{id}/academic-title-history")
+    public ResponseEntity<List<AcademicTitleHistoryDto>> getHistory(@PathVariable("id") Long id) throws Exception{
+        List<AcademicTitleHistoryDto> academicTitleHistoryDtos = memberService.getHistory(id);
+        return new ResponseEntity<>(academicTitleHistoryDtos,HttpStatus.OK);
+    }
 
     @GetMapping("/by-department")
-    public ResponseEntity<List<String>> getAllByDepartment(@RequestParam("Department Name") String department) throws Exception{
-        List<String> memberList = memberService.getAllByDepartment(department);
+    public ResponseEntity<List<MemberDto>> getAllByDepartment(@RequestParam("Department Name") String department) throws Exception{
+        List<MemberDto> memberList = memberService.getAllByDepartment(department);
         return new ResponseEntity<>(memberList, HttpStatus.OK);
     }
 

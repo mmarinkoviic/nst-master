@@ -5,8 +5,10 @@ import nst.springboot.restexample01.controller.domain.*;
 import nst.springboot.restexample01.controller.repository.*;
 import nst.springboot.restexample01.controller.service.AcademicTitleHistoryService;
 import nst.springboot.restexample01.controller.service.MemberService;
+import nst.springboot.restexample01.converter.impl.AcademicTitleHistoryConverter;
 import nst.springboot.restexample01.converter.impl.ManagementConverter;
 import nst.springboot.restexample01.converter.impl.MemberConverter;
+import nst.springboot.restexample01.dto.AcademicTitleHistoryDto;
 import nst.springboot.restexample01.dto.MemberDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ public class MemberServiceImpl implements MemberService {
     private ManagementRepository managementRepository;
     private AcademicTitleHistoryRepository academicTitleHistoryRepository;
     private AcademicTitleHistoryService academicTitleHistoryService;
+    private AcademicTitleHistoryConverter academicTitleHistoryConverter;
     public MemberServiceImpl (MemberRepository memberRepository, MemberConverter memberConverter,
                               AcademicTitleRepository academicTitleRepository,
                               EducationTitleRepository educationTitleRepository,
@@ -35,7 +38,8 @@ public class MemberServiceImpl implements MemberService {
                               DepartmentRepository departmentRepository,
                               ManagementRepository managementRepository,
                               AcademicTitleHistoryRepository academicTitleHistoryRepository,
-                              AcademicTitleHistoryService academicTitleHistoryService){
+                              AcademicTitleHistoryService academicTitleHistoryService,
+                              AcademicTitleHistoryConverter academicTitleHistoryConverter){
         this.memberRepository = memberRepository;
         this.memberConverter = memberConverter;
         this.academicTitleRepository = academicTitleRepository;
@@ -45,6 +49,7 @@ public class MemberServiceImpl implements MemberService {
         this.managementRepository = managementRepository;
         this.academicTitleHistoryRepository = academicTitleHistoryRepository;
         this.academicTitleHistoryService = academicTitleHistoryService;
+        this.academicTitleHistoryConverter = academicTitleHistoryConverter;
     }
 
     @Override
@@ -77,10 +82,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<String> getAll() {
+    public List<MemberDto> getAll() {
         return memberRepository
                 .findAll()
-                .stream().map(entity -> memberConverter.toDto(entity).toString())
+                .stream().map(entity -> memberConverter.toDto(entity))
                 .sorted()
                 .collect(Collectors.toList());
     }
@@ -90,17 +95,6 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(id).orElseThrow(()->new Exception("Member does not exist!"));
         List<AcademicTitleHistory> academicTitleHistoryList = academicTitleHistoryRepository.findByMemberFirstNameAndMemberLastName(member.getFirstName(),member.getLastName());
         List<Management> managementList = managementRepository.findByMemberId(id);
-        if(academicTitleHistoryList.isEmpty() && managementList.isEmpty()) {
-            memberRepository.delete(member);
-        }else{
-            throw new Exception("Member can not be deleted! In order to delete member, his/hers history must be deleted!");
-        }
-    }
-    @Override
-    public void delete(String firstName, String lastName) throws Exception {
-        Member member = memberRepository.findByFirstNameAndLastName(firstName,lastName).orElseThrow(()->new Exception("Member does not exist!"));
-        List<AcademicTitleHistory> academicTitleHistoryList = academicTitleHistoryRepository.findByMemberFirstNameAndMemberLastName(firstName,lastName);
-        List<Management> managementList = managementRepository.findByMemberId(member.getId());
         if(academicTitleHistoryList.isEmpty() && managementList.isEmpty()) {
             memberRepository.delete(member);
         }else{
@@ -152,30 +146,28 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDto findByFirstLastName(String firstName, String lastName) throws Exception {
-        Optional<Member> member = memberRepository.findByFirstNameAndLastName(firstName, lastName);
-        if(member.isPresent()){
-            Member memb = member.get();
-            return memberConverter.toDto(memb);
-        }else{
-            throw new Exception("Member does not exist!");
-        }
+    public List<AcademicTitleHistoryDto> getHistory(Long id) throws Exception {
+        memberRepository.findById(id).orElseThrow(()->new Exception("Member does not exist!"));
+        List<AcademicTitleHistory> history = academicTitleHistoryRepository.findByMemberId(id);
+        if(history.isEmpty()){throw new Exception("There are no academic title history for this member");}
+        return history
+                .stream().map(academicTitleHistory -> academicTitleHistoryConverter.toDto(academicTitleHistory))
+                .collect(Collectors.toList());
     }
 
+
     @Override
-    public List<String> getAllByDepartment(String department) throws Exception {
+    public List<MemberDto> getAllByDepartment(String name) throws Exception {
 
-        Optional<Department> dep = departmentRepository.findByName(department);
-        if(dep.isEmpty()){
-            throw new Exception("Department " + department + " is not exist!");
+        Optional<Department> check = departmentRepository.findByName(name);
+        if(check.isEmpty()){
+            throw new Exception("Department " + name + " is not exist!");
         }
-
-        List<Member> list = memberRepository.findByDepartmentName(department);
-        List<String> print = list.stream().map(member -> memberConverter.toDto(member).toString()).sorted().collect(Collectors.toList());
-        if(print.isEmpty()){
-            throw new Exception("There are no members witch department is "+department+"!");
+        List<Member> list = memberRepository.findByDepartmentName(name);
+        if(list.isEmpty()){
+            throw new Exception("There are no members witch department is "+check.get().getName()+"!");
         }
-        return print;
+        return list.stream().map(member -> memberConverter.toDto(member)).collect(Collectors.toList());
     }
 
     @Override

@@ -2,6 +2,8 @@ package nst.springboot.restexample01.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
+
+import nst.springboot.restexample01.controller.domain.Subject;
 import nst.springboot.restexample01.controller.service.SubjectService;
 import nst.springboot.restexample01.dto.SubjectDto;
 import org.springframework.http.HttpStatus;
@@ -26,20 +28,15 @@ public class SubjectController {
         return new ResponseEntity<>(subjectDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/get-all")
-    public ResponseEntity<List<String>> getAll() {
-        List<String> subjects = subjectService.getAll();
+    @GetMapping()
+    public ResponseEntity<List<SubjectDto>> getAll() {
+        List<SubjectDto> subjects = subjectService.getAll();
         return new ResponseEntity<>(subjects, HttpStatus.OK);
     }
 
-    @GetMapping("/find-by-id")
-    public String findById(@RequestParam("ID") Long id) throws Exception {
-        return subjectService.findById(id).toString();
-    }
-
-    @GetMapping("/find-by-name")
-    public String findByName(@RequestParam("Subject Name") String name) throws Exception {
-        return subjectService.findByName(name);
+    @GetMapping("/{id}")
+    public SubjectDto findById(@PathVariable("id") Long id) throws Exception {
+        return subjectService.findById(id);
     }
 
     @PutMapping("/update")
@@ -48,20 +45,15 @@ public class SubjectController {
         return new ResponseEntity<>("Subject updated!",HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-id")
+    @DeleteMapping()
     public ResponseEntity<String> delete(@RequestParam("ID") Long id) throws Exception {
         subjectService.delete(id);
         return new ResponseEntity<>("Subject removed!", HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-name")
-    public ResponseEntity<String> delete(@RequestParam("Subject Name") String name) throws Exception {
-        subjectService.delete(name);
-        return new ResponseEntity<>("Subject removed!", HttpStatus.OK);
-    }
-    @GetMapping("/by-department")
-    public ResponseEntity<List<String>> getByDepartmentName(@RequestParam("Department Name") String departmentName) throws Exception {
-        List<String> subjects = subjectService.findByDepartmentName(departmentName);
+    @GetMapping("/by-department/{id}")
+    public ResponseEntity<List<SubjectDto>> getByDepartmentName(@PathVariable("id") Long id) throws Exception {
+        List<SubjectDto> subjects = subjectService.findByDepartment(id);
         return new ResponseEntity<>(subjects, HttpStatus.OK);
     }
 }

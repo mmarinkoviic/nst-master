@@ -52,10 +52,10 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public List<String> getAll() {
+    public List<SubjectDto> getAll() {
         return subjectRepository
                 .findAll()
-                .stream().map(entity -> subjectConverter.toDto(entity).toString()).sorted()
+                .stream().map(entity -> subjectConverter.toDto(entity))
                 .collect(Collectors.toList());
     }
 
@@ -72,20 +72,10 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public void delete(String nameSubject) throws Exception {
-        Optional<Subject> subject = subjectRepository.findByName(nameSubject);
-        if(subject.isPresent()){
-            Subject subj = subject.get();
-            subjectRepository.delete(subj);
-        }else{
-            throw new Exception("Subject does not exist!");
-        }
-    }
-
-    @Override
     @Transactional
     public void update(SubjectDto subjectDto) throws Exception {
         Long id = subjectDto.getId();
+        if(subjectRepository.findByName(subjectDto.getName()).isPresent()){throw new Exception("Subject "+ subjectDto.getName()+" already exist!");}
         if (id == null || !subjectRepository.existsById(id)){
             throw new EntityNotFoundException("Subject with id " + id + " not found.");
         }
@@ -101,34 +91,24 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public String findById(Long id) throws Exception {
+    public SubjectDto findById(Long id) throws Exception {
         Optional<Subject> subject = subjectRepository.findById(id);
         if (subject.isPresent()) {
             Subject subj = subject.get();
-            return subjectConverter.toDto(subj).toString();
+            return subjectConverter.toDto(subj);
         } else {
             throw new Exception("Subject does not exist!");
         }
     }
 
     @Override
-    public String findByName(String nameSubject) throws Exception {
-        Optional<Subject> subject = subjectRepository.findByName(nameSubject);
-        if(subject.isPresent()){
-            return subjectConverter.toDto(subject.get()).toString();
-        }else{
-            throw new Exception("Subject does not exist!");
-        }
-    }
-
-    @Override
-    public List<String> findByDepartmentName(String department) throws Exception{
-        departmentRepository.findByName(department).orElseThrow(()-> new Exception("Department " + department + " does not exist!"));
-        List<Subject> subjectsList = subjectRepository.findByDepartmentName(department);
+    public List<SubjectDto> findByDepartment(Long id) throws Exception{
+        Department department = departmentRepository.findById(id).orElseThrow(()-> new Exception("Department with id " + id + " does not exist!"));
+        List<Subject> subjectsList = subjectRepository.findByDepartmentId(id);
         if(subjectsList.isEmpty()){
-            throw new Exception("There are no subject in department " + department + ".");
+            throw new Exception("There are no subject in department " + department.getName() + ".");
         }
-        return subjectsList.stream().map(entity -> subjectConverter.toDto(entity).toString()).sorted()
+        return subjectsList.stream().map(entity -> subjectConverter.toDto(entity))
                 .collect(Collectors.toList());
     }
 
