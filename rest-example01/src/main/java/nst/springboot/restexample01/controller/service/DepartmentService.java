@@ -1,6 +1,7 @@
 package nst.springboot.restexample01.controller.service;
 
 import java.util.List;
+import java.util.logging.Handler;
 
 import nst.springboot.restexample01.controller.domain.Subject;
 import nst.springboot.restexample01.dto.DepartmentDto;
@@ -13,6 +14,8 @@ public interface DepartmentService {
     void delete(Long id) throws Exception;
     void update(Long id, String newName) throws Exception;
     DepartmentDto findById(Long id) throws Exception;
+    void putSecretary(Long departmentId,Long memberId) throws Exception;
+    void putHandler (Long departmentId, Long memberId) throws Exception;
     MemberDto getSecretary(Long id) throws Exception;
     MemberDto getHandler(Long id) throws Exception;
     List<SubjectDto> getSubjects (Long id) throws Exception;

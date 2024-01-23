@@ -60,6 +60,16 @@ public class DepartmentController {
         MemberDto memberDto = departmentService.getSecretary(id);
         return new ResponseEntity<>(memberDto,HttpStatus.OK);
     }
+    @PutMapping("/updateSecretary/")
+    public ResponseEntity<String> putSecretary(@RequestParam Long departmentId, @RequestParam Long memberId) throws Exception{
+        departmentService.putSecretary(departmentId,memberId);
+        return new ResponseEntity<>("Secretary posted",HttpStatus.OK);
+    }
+    @PutMapping("/updateHandler/")
+    public ResponseEntity<String> putHandler(@RequestParam Long departmentId, @RequestParam Long memberId) throws Exception{
+        departmentService.putHandler(departmentId,memberId);
+        return new ResponseEntity<>("Handler posted",HttpStatus.OK);
+    }
     @GetMapping("/{id}/handler")
     public ResponseEntity<MemberDto> findHandler (@PathVariable("id") Long id) throws Exception{
         MemberDto memberDto = departmentService.getHandler(id);

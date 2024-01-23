@@ -26,47 +26,37 @@ public class ManagementController {
         return new ResponseEntity<>(managementDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/find-by-id")
-    public String findById (@RequestParam("ID") Long id) throws Exception{
+    @GetMapping("/{id}")
+    public ManagementDto findById (@PathVariable("id") Long id) throws Exception{
         return managementService.findById(id);
     }
 
-    @GetMapping("/get-all")
-    public ResponseEntity<List<String>> getAll() {
-        List<String> managements = managementService.getAll();
+    @GetMapping()
+    public ResponseEntity<List<ManagementDto>> getAll() {
+        List<ManagementDto> managements = managementService.getAll();
         return new ResponseEntity<>(managements, HttpStatus.OK);
     }
-    @GetMapping("/find-member-by-department-role")
-    public ResponseEntity<String> findMemberByDepartmentRole(@RequestParam("Department Name") String departmentName,
-                                                             @RequestParam("Role") String role) throws Exception{
-        String management = managementService.findMemberByRoleAndDepartment(departmentName,role);
+
+    @GetMapping("/department/{id}")
+    public ResponseEntity<List<ManagementDto>> historyOfDepartment(@PathVariable("id") Long id) throws Exception{
+        List<ManagementDto> management = managementService.findByDepartment(id);
         return new ResponseEntity<>(management,HttpStatus.OK);
     }
 
-    @GetMapping("/history-of-department")
-    public ResponseEntity<List<String>> historyOfDepartment(@RequestParam("Department Name") String departmentName) throws Exception{
-        List<String> management = managementService.findByDepartment(departmentName);
+    @GetMapping("/department/current/{id}")
+    public ResponseEntity<List<ManagementDto>> managementOfDepartment(@PathVariable("id") Long id) throws Exception{
+        List<ManagementDto> management = managementService.findCurrentDepartment(id);
         return new ResponseEntity<>(management,HttpStatus.OK);
     }
 
-    @GetMapping("/management-of-department")
-    public ResponseEntity<List<String>> managementOfDepartment(@RequestParam("Department Name") String departmentName) throws Exception{
-        List<String> management = managementService.findCurrentDepartment(departmentName);
-        return new ResponseEntity<>(management,HttpStatus.OK);
-    }
-    @GetMapping("/current-management-of-all-departments")
-    public ResponseEntity<List<String>> managementOfAllDepartments() throws Exception{
-        List<String> management = managementService.currentManagement();
-        return new ResponseEntity<>(management,HttpStatus.OK);
-    }
     @GetMapping("/current-handlers")
-    public ResponseEntity<List<String>> currentHandlers() throws Exception{
-        List<String> management = managementService.currentHandlers();
+    public ResponseEntity<List<ManagementDto>> currentHandlers() throws Exception{
+        List<ManagementDto> management = managementService.currentHandlers();
         return new ResponseEntity<>(management,HttpStatus.OK);
     }
     @GetMapping("/current-secretaries")
-    public ResponseEntity<List<String>> currentSecretaries() throws Exception{
-        List<String> management = managementService.currentSecretary();
+    public ResponseEntity<List<ManagementDto>> currentSecretaries() throws Exception{
+        List<ManagementDto> management = managementService.currentSecretary();
         return new ResponseEntity<>(management,HttpStatus.OK);
     }
     @DeleteMapping("/delete")

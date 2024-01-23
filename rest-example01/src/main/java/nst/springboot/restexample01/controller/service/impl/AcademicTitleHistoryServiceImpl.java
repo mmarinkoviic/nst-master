@@ -40,26 +40,23 @@ public class AcademicTitleHistoryServiceImpl implements AcademicTitleHistoryServ
 
     @Transactional
     @Override
-    public AcademicTitleHistoryDto save(String firstName, String lastName, LocalDate startDate,
-                                        String academicTitle) throws Exception {
-        Member member = memberRepository.findByFirstNameAndLastName(firstName, lastName)
-                .orElseThrow(() -> new Exception("Member " + firstName + " " + lastName + " does not exist!"));
-        if(!startDate.isEqual(LocalDate.now()) && !startDate.isAfter(LocalDate.now())){throw new Exception("Date is not valid!");}
+    public AcademicTitleHistoryDto save(Long memberId, LocalDate startDate, String academicTitle) throws Exception {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new Exception("Member does not exist!"));
+        if(!startDate.isEqual(LocalDate.now()) && !startDate.isBefore(LocalDate.now())){throw new Exception("Date is not valid! It can not be date from future!");}
 
         String scientificField = member.getScientificField().getScfField();
 
         AcademicTitle academicTitleObj = academicTitleRepository.findByTitle(academicTitle)
                 .orElseThrow(() -> new Exception("Academic title " + academicTitle + " does not exist!"));
 
-        ScientificField scientificFieldObj = scientificFieldRepository.findByScfField(scientificField)
-                .orElseThrow(() -> new Exception("Scientific field " + scientificField + " does not exist!"));
+        ScientificField scientificFieldObj = scientificFieldRepository.findByScfField(scientificField).get();
 
-        Optional<AcademicTitleHistory> check = academicTitleHistoryRepository.findByMemberFirstNameAndMemberLastNameAndAcademicTitleTitleAndScientificFieldScfField
-                (firstName,lastName,academicTitle,scientificField);
+        Optional<AcademicTitleHistory> check = academicTitleHistoryRepository.findByMemberIdAndAcademicTitleTitle(memberId,academicTitle);
 
         if(check.isPresent()){
             throw new Exception
-                    ("Member " + firstName + " " + lastName + " with academic title " + academicTitle + " in scientific field " + scientificField + " already exist!");
+                    ("Member with " + memberId + " with academic title " + academicTitle + " in scientific field " + scientificField + " already exist!");
         }
 
         AcademicTitleHistory academicTitleHistory = new AcademicTitleHistory();
@@ -69,7 +66,7 @@ public class AcademicTitleHistoryServiceImpl implements AcademicTitleHistoryServ
         academicTitleHistory.setAcademicTitle(academicTitleObj);
         academicTitleHistory.setScientificField(scientificFieldObj);
 
-        update(firstName,lastName,startDate);
+        update(member.getId(),startDate);
         member.setAcademicTitle(academicTitleObj);
 
         memberRepository.save(member);
@@ -80,10 +77,48 @@ public class AcademicTitleHistoryServiceImpl implements AcademicTitleHistoryServ
     }
 
     @Override
-    public List<String> getAll() {
+    public AcademicTitleHistoryDto savePrevious(Long memberId, LocalDate startDate, LocalDate endDate, String academicTitle) throws Exception {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new Exception("Member does not exist!"));
+        if(!startDate.isEqual(endDate) && !startDate.isBefore(endDate)){throw new Exception("End date must be after start date!");}
+
+        String scientificField = member.getScientificField().getScfField();
+
+        AcademicTitle academicTitleObj = academicTitleRepository.findByTitle(academicTitle)
+                .orElseThrow(() -> new Exception("Academic title " + academicTitle + " does not exist!"));
+
+        ScientificField scientificFieldObj = scientificFieldRepository.findByScfField(scientificField).get();
+
+        Optional<AcademicTitleHistory> check = academicTitleHistoryRepository.findByMemberIdAndAcademicTitleTitle(memberId,academicTitle);
+
+        if(check.isPresent()){
+            throw new Exception
+                    ("Member with " + memberId + " with academic title " + academicTitle + " in scientific field " + scientificField + " already exist!");
+        }
+
+        AcademicTitleHistory current = academicTitleHistoryRepository.findByEndDateIsNullAndMemberId(memberId).get();
+
+        if(endDate.isAfter(current.getStartDate())){
+            throw new Exception("Dates are not valid! Completed record is later than current one according to dates!");
+        }
+
+        AcademicTitleHistory academicTitleHistory = new AcademicTitleHistory();
+        academicTitleHistory.setMember(member);
+        academicTitleHistory.setStartDate(startDate);
+        academicTitleHistory.setEndDate(endDate);
+        academicTitleHistory.setAcademicTitle(academicTitleObj);
+        academicTitleHistory.setScientificField(scientificFieldObj);
+
+        AcademicTitleHistory savedHistory = academicTitleHistoryRepository.save(academicTitleHistory);
+
+        return academicTitleHistoryConverter.toDto(savedHistory);
+    }
+
+    @Override
+    public List<AcademicTitleHistoryDto> getAll() {
         return academicTitleHistoryRepository
                 .findAll()
-                .stream().map(entity -> printing(academicTitleHistoryConverter.toDto(entity))).sorted()
+                .stream().map(entity -> academicTitleHistoryConverter.toDto(entity))
                 .collect(Collectors.toList());
     }
 
@@ -100,89 +135,33 @@ public class AcademicTitleHistoryServiceImpl implements AcademicTitleHistoryServ
     }
 
     @Override
-    public void update(String firstName, String lastName, LocalDate endDate) throws Exception {
-        Member member = memberRepository.findByFirstNameAndLastName(firstName, lastName)
-                .orElseThrow(() -> new Exception("Member " + firstName + " " + lastName + " does not exist!"));
+    public void update(Long id, LocalDate endDate) throws Exception {
+        memberRepository.findById(id).orElseThrow(() -> new Exception("Member does not exist!"));
 
         Optional<AcademicTitleHistory> academicTitleHistory = academicTitleHistoryRepository
-                .findByEndDateIsNullAndMemberId(member.getId());
+                .findByEndDateIsNullAndMemberId(id);
         if(academicTitleHistory.isPresent()){
             AcademicTitleHistory academicTitleHistoryUpdate = academicTitleHistory.get();
             academicTitleHistoryUpdate.setEndDate(endDate);
             academicTitleHistoryRepository.save(academicTitleHistoryUpdate);
         }
-
     }
 
     @Override
-    public String findById(Long id) throws Exception {
-        Optional<AcademicTitleHistory> academicTitleHistory = academicTitleHistoryRepository.findById(id);
-        if (academicTitleHistory.isPresent()) {
-            AcademicTitleHistory ath = academicTitleHistory.get();
-            return this.printing(academicTitleHistoryConverter.toDto(ath));
-        } else {
-            throw new Exception("Academic title history does not exist!");
-        }
+    public AcademicTitleHistoryDto findById(Long id) throws Exception {
+        AcademicTitleHistory academicTitleHistory = academicTitleHistoryRepository.findById(id).orElseThrow(()->new Exception("Academic title history does not exist!"));
+       return academicTitleHistoryConverter.toDto(academicTitleHistory);
     }
 
     @Override
-    public List<String> getAllByMember(String firstName, String lastName) throws Exception{
-        Optional<Member> member = memberRepository.findByFirstNameAndLastName(firstName,lastName);
-        if(member.isEmpty()){
-            throw new Exception("Member " + firstName + " " + lastName + " does not exist!");
+    public List<AcademicTitleHistoryDto> getAllByMember(Long id) throws Exception{
+        Member member = memberRepository.findById(id).orElseThrow(()->new Exception("Member does not exist!"));
+
+        List<AcademicTitleHistoryDto> list = academicTitleHistoryRepository.findByMemberId(id).stream().map(academicTitleHistory -> academicTitleHistoryConverter.toDto(academicTitleHistory)).collect(Collectors.toList());
+        if(list.isEmpty()){
+            throw new Exception("There are no records about member " +member.getFirstName()+" "+member.getLastName());
         }
-        List<AcademicTitleHistory> list = academicTitleHistoryRepository.findByMemberFirstNameAndMemberLastName(firstName,lastName);
-        List<String> print = list.stream().map(academicTitleHistory -> printing(academicTitleHistoryConverter.toDto(academicTitleHistory))).sorted().collect(Collectors.toList());
-        if(print.isEmpty()){
-            throw new Exception("There are no records about member " +firstName+" "+lastName);
-        }
-        return print;
+        return list;
     }
 
-    @Override
-    public List<String> getAllCurrently() {
-        List<AcademicTitleHistory> list = academicTitleHistoryRepository.findByEndDateIsNull();
-        List<String> print = list.stream().map(academicTitleHistory -> printing(academicTitleHistoryConverter.toDto(academicTitleHistory))).sorted().collect(Collectors.toList());
-        if(print.isEmpty()){
-            throw new NullPointerException("There are no currently active members.");
-        }
-        return print;
-    }
-
-    @Override
-    public List<String> getAllByScfField(String scientificField) throws Exception{
-        Optional<ScientificField> scfId = scientificFieldRepository.findByScfField(scientificField);
-        if (scfId.isEmpty()){
-            throw new Exception("Scientific field " + scientificField + " does not exist!");
-        }
-        List<AcademicTitleHistory> list = academicTitleHistoryRepository.findByScientificFieldScfField(scientificField);
-        List<String> print = list.stream().map(academicTitleHistory -> printing(academicTitleHistoryConverter.toDto(academicTitleHistory))).sorted().collect(Collectors.toList());
-        if(print.isEmpty()){
-            throw new Exception("There are no records about scientific field " + scientificField);
-        }
-        return print;
-    }
-
-    @Override
-    public List<String> getAllCurrentlyByAcademicTitle(String academicTitle) throws Exception{
-        academicTitleRepository.findByTitle(academicTitle).orElseThrow(()->new Exception("Academic title " + academicTitle + " does not exist!"));
-        List<AcademicTitleHistory> list = academicTitleHistoryRepository.findByEndDateIsNullAndAcademicTitleTitle(academicTitle);
-        List<String> print = list.stream().map(academicTitleHistory -> printing(academicTitleHistoryConverter.toDto(academicTitleHistory))).sorted().collect(Collectors.toList());
-        if(print.isEmpty()){
-            throw new Exception("There are no records about currently active members with academic title " + academicTitle);
-        }
-        return print;
-    }
-
-    @Override
-    public String printing(AcademicTitleHistoryDto academicTitleHistoryDto) {
-        if (academicTitleHistoryDto.getEndDate() != null) {
-            return academicTitleHistoryDto.getMemberDto().toString() + " was " + academicTitleHistoryDto.getAcademicTitle()
-                    + " from " + academicTitleHistoryDto.getStartDate() + " to " + academicTitleHistoryDto.getEndDate() +
-                    " within scientific field " + academicTitleHistoryDto.getScientificField();
-        }else{
-            return academicTitleHistoryDto.getMemberDto().toString() + " become " + academicTitleHistoryDto.getAcademicTitle()
-                    + " from " + academicTitleHistoryDto.getStartDate() + " within scientific field " + academicTitleHistoryDto.getScientificField();
-        }
-    }
 }

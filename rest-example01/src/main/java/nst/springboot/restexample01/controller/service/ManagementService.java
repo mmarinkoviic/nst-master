@@ -9,15 +9,13 @@ public interface ManagementService {
 
     ManagementDto save (String departmentName, String firstName, String lastName, String role, LocalDate startDate) throws Exception;
     void update (String department, String role, LocalDate date) throws Exception;
-    String findById (Long id) throws Exception;
-    String findMemberByRoleAndDepartment(String departmentName, String role) throws Exception;
-    List<String> getAll ();
-    List<String> findByDepartment (String nameDepartment) throws Exception;
-    List<String> findCurrentDepartment (String nameDepartment) throws Exception;
-    List<String> currentManagement () throws Exception;
-    List<String> currentHandlers () throws Exception;
-    List<String> currentSecretary () throws Exception;
+    ManagementDto findById (Long id) throws Exception;
+    List<ManagementDto> getAll ();
+    List<ManagementDto> findByDepartment (Long id) throws Exception;
+    List<ManagementDto> findCurrentDepartment (Long id) throws Exception;
+    List<ManagementDto> currentHandlers () throws Exception;
+    List<ManagementDto> currentSecretary () throws Exception;
     void delete (Long id) throws Exception;
-    String printing (ManagementDto managementDto);
+
 
 }

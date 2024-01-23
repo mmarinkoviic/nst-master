@@ -14,4 +14,5 @@ public interface AcademicTitleHistoryRepository extends JpaRepository<AcademicTi
     Optional<AcademicTitleHistory> findByEndDateIsNullAndMemberId (Long memberId);
     Optional<AcademicTitleHistory> findByMemberFirstNameAndMemberLastNameAndAcademicTitleTitleAndScientificFieldScfField
             (String firstName, String lastName, String academicTitle, String scientificField);
+    Optional<AcademicTitleHistory> findByMemberIdAndAcademicTitleTitle(Long id, String academicTitle);
 }

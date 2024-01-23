@@ -6,15 +6,12 @@ import java.util.List;
 
 public interface AcademicTitleHistoryService {
 
-    AcademicTitleHistoryDto save (String firstName, String lastName, LocalDate startDate, String academicTitle) throws Exception;
-    List<String> getAll();
+    AcademicTitleHistoryDto save (Long memberId, LocalDate startDate, String academicTitle) throws Exception;
+    AcademicTitleHistoryDto savePrevious (Long memberId, LocalDate startDate, LocalDate endDate, String academicTitle) throws Exception;
+    List<AcademicTitleHistoryDto> getAll();
     void delete (Long id) throws Exception;
-    void update (String firstName, String lastName, LocalDate endDate) throws Exception;
-    String findById (Long id) throws Exception;
-    List <String> getAllByMember (String firstName, String lastName) throws Exception;
-    List<String> getAllCurrently ();
-    List<String> getAllByScfField (String scfId) throws Exception;
-    List<String> getAllCurrentlyByAcademicTitle (String academicTitle) throws Exception;
-    String printing (AcademicTitleHistoryDto academicTitleHistoryDto);
+    void update (Long id, LocalDate endDate) throws Exception;
+    AcademicTitleHistoryDto findById (Long id) throws Exception;
+    List <AcademicTitleHistoryDto> getAllByMember (Long id) throws Exception;
 
 }

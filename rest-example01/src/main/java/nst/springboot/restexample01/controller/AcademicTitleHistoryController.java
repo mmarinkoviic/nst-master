@@ -18,8 +18,8 @@ public class AcademicTitleHistoryController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<String>> getAll() {
-        List<String> academicTitleHistoryList = academicTitleHistoryService.getAll();
+    public ResponseEntity<List<AcademicTitleHistoryDto>> getAll() {
+        List<AcademicTitleHistoryDto> academicTitleHistoryList = academicTitleHistoryService.getAll();
         return new ResponseEntity<>(academicTitleHistoryList, HttpStatus.OK);
     }
 
@@ -29,43 +29,31 @@ public class AcademicTitleHistoryController {
         return new ResponseEntity<>("Record removed!", HttpStatus.OK);
     }
 
-    @GetMapping("/find-by-id")
-    public String findById(@RequestParam("ID") Long id) throws Exception {
+    @GetMapping("/{id}")
+    public AcademicTitleHistoryDto findById(@PathVariable("id") Long id) throws Exception {
         return academicTitleHistoryService.findById(id);
     }
 
-    @GetMapping("/by-member")
-    public ResponseEntity<List<String>> getAllByMember(@RequestParam("First Name") String firstName,
-                                                       @RequestParam("Last Name") String lastName) throws Exception{
-        List<String> academicTitleHistoryList = academicTitleHistoryService.getAllByMember(firstName,lastName);
-        return new ResponseEntity<>(academicTitleHistoryList, HttpStatus.OK);
-    }
-
-    @GetMapping("/by-scf-field")
-    public ResponseEntity<List<String>> getAllByScientificField(@RequestParam("Scientific Field") String scfField) throws Exception{
-        List<String> academicTitleHistoryList = academicTitleHistoryService.getAllByScfField(scfField);
-        return new ResponseEntity<>(academicTitleHistoryList, HttpStatus.OK);
-    }
-
-    @GetMapping("/members-with-current-academic-titles")
-    public ResponseEntity<List<String>> getAllCurrent() throws Exception{
-        List<String> academicTitleHistoryList = academicTitleHistoryService.getAllCurrently();
-        return new ResponseEntity<>(academicTitleHistoryList, HttpStatus.OK);
-    }
-
-
-    @GetMapping("/current-by-academic-title")
-    public ResponseEntity<List<String>> getAllCurrentByAcademicTitle(@RequestParam("Academic Title") String academicTitle) throws Exception{
-        List<String> academicTitleHistoryList = academicTitleHistoryService.getAllCurrentlyByAcademicTitle(academicTitle);
+    @GetMapping("/member/{id}")
+    public ResponseEntity<List<AcademicTitleHistoryDto>> getAllByMember(@PathVariable("id") Long id) throws Exception{
+        List<AcademicTitleHistoryDto> academicTitleHistoryList = academicTitleHistoryService.getAllByMember(id);
         return new ResponseEntity<>(academicTitleHistoryList, HttpStatus.OK);
     }
 
     @PostMapping("/save")
-    public ResponseEntity<AcademicTitleHistoryDto> save(@RequestParam("First Name") String firstName,
-                                                        @RequestParam("Last Name") String lastName,
+    public ResponseEntity<AcademicTitleHistoryDto> save(@RequestParam("Id Member") Long id,
                                                         @RequestParam("Academic Title") String academicTitle,
                                                         @RequestParam("Start Date") LocalDate startDate) throws Exception {
-        AcademicTitleHistoryDto academicTitleHistoryDto = academicTitleHistoryService.save(firstName,lastName,startDate,academicTitle);
+        AcademicTitleHistoryDto academicTitleHistoryDto = academicTitleHistoryService.save(id,startDate,academicTitle);
+        return new ResponseEntity<>(academicTitleHistoryDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/save-previous")
+    public ResponseEntity<AcademicTitleHistoryDto> savePrevious(@RequestParam("Id Member") Long id,
+                                                                @RequestParam("Academic Title") String academicTitle,
+                                                                @RequestParam("Start Date") LocalDate startDate,
+                                                                @RequestParam("End Date") LocalDate endDate) throws Exception {
+        AcademicTitleHistoryDto academicTitleHistoryDto = academicTitleHistoryService.savePrevious(id,startDate,endDate,academicTitle);
         return new ResponseEntity<>(academicTitleHistoryDto, HttpStatus.CREATED);
     }
 

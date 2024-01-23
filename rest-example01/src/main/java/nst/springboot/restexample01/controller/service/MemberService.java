@@ -13,8 +13,8 @@ public interface MemberService {
     void update (MemberDto memberDto) throws Exception;
     MemberDto findById (Long id) throws Exception;
     List<AcademicTitleHistoryDto> getHistory(Long id) throws Exception;
-    List<MemberDto> getAllByDepartment(String name) throws Exception;
-    List<String> getAllByAcademicTitle(String academicTitle) throws Exception;
-    List<String> getAllByEducationTitle(String educationTitle) throws Exception;
-    List<String> getAllByScientificField(String scientificField) throws Exception;
+    List<MemberDto> getAllByDepartment(Long id) throws Exception;
+    List<MemberDto> getAllByAcademicTitle(Long id) throws Exception;
+    List<MemberDto> getAllByEducationTitle(Long id) throws Exception;
+    List<MemberDto> getAllByScientificField(Long id) throws Exception;
 }

@@ -1,5 +1,6 @@
 package nst.springboot.restexample01.controller.service.impl;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -88,6 +89,56 @@ public class DepartmentServiceImpl implements DepartmentService {
     public DepartmentDto findById(Long id) throws Exception {
         Department department = departmentRepository.findById(id).orElseThrow(()->new Exception("Department does not exist!"));
         return departmentConverter.toDto(department);
+    }
+
+    @Override
+    @Transactional
+    public void putSecretary(Long departmentId, Long memberId) throws Exception {
+        Department department = departmentRepository.findById(departmentId).orElseThrow(()->new Exception("Department does not exist!"));
+        Member member = memberRepository.findById(memberId).orElseThrow(()->new Exception("Member does not exist!"));
+
+        Optional<Management> current = managementRepository.findByEndDateIsNullAndDepartmentIdAndRole(departmentId,"secretary");
+        Optional<Management> handler = managementRepository.findByEndDateIsNullAndDepartmentIdAndRole(departmentId,"handler");
+        if(current.isPresent()){
+            if(current.get().getMember().getId().equals(memberId)){
+                throw new Exception("This member is already secretary of department!");
+            }
+            Management old = current.get();
+            old.setEndDate(LocalDate.now());
+            managementRepository.save(old);
+        }
+        if(handler.isPresent()){
+            if(handler.get().getMember().getId().equals(memberId)){
+                throw new Exception("This member is already handler of department!");
+            }
+        }
+        Management management = new Management(managementRepository.count()+1, department,member,"secretary", LocalDate.now(),null);
+        managementRepository.save(management);
+
+    }
+
+    @Override
+    public void putHandler(Long departmentId, Long memberId) throws Exception {
+        Department department = departmentRepository.findById(departmentId).orElseThrow(()->new Exception("Department does not exist!"));
+        Member member = memberRepository.findById(memberId).orElseThrow(()->new Exception("Member does not exist!"));
+
+        Optional<Management> current = managementRepository.findByEndDateIsNullAndDepartmentIdAndRole(departmentId,"handler");
+        Optional<Management> secretary = managementRepository.findByEndDateIsNullAndDepartmentIdAndRole(departmentId,"secretary");
+        if(current.isPresent()){
+            if(current.get().getMember().getId().equals(memberId)){
+                throw new Exception("This member is already handler of department!");
+            }
+            Management old = current.get();
+            old.setEndDate(LocalDate.now());
+            managementRepository.save(old);
+        }
+        if(secretary.isPresent()){
+            if(secretary.get().getMember().getId().equals(memberId)){
+                throw new Exception("This member is already secretary of department!");
+            }
+        }
+        Management management = new Management(managementRepository.count()+1, department,member,"handler", LocalDate.now(),null);
+        managementRepository.save(management);
     }
 
     @Override
