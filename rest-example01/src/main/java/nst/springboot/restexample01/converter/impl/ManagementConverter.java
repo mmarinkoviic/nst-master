@@ -22,7 +22,7 @@ public class ManagementConverter implements DtoEntityConverter<ManagementDto, Ma
 
     @Override
     public Management toEntity(ManagementDto managementDto) {
-        return new Management(managementDto.getId(), departmentRepository.findByName(managementDto.getDepartmentDto()).get(),
+        return new Management(managementDto.getId(), departmentRepository.findByNameIgnoreCase(managementDto.getDepartmentDto()).get(),
                 memberConverter.toEntity(managementDto.getMemberDto()),managementDto.getRole(),managementDto.getStartDate(),managementDto.getEndDate());
     }
 }

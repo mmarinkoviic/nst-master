@@ -7,6 +7,7 @@ import nst.springboot.restexample01.controller.domain.Subject;
 import nst.springboot.restexample01.controller.service.DepartmentService;
 import nst.springboot.restexample01.controller.service.ManagementService;
 import nst.springboot.restexample01.dto.DepartmentDto;
+import nst.springboot.restexample01.dto.ManagementDto;
 import nst.springboot.restexample01.dto.MemberDto;
 import nst.springboot.restexample01.dto.SubjectDto;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class DepartmentController {
     }
 
 
-    @PutMapping("/update/{id}")
+    @PatchMapping("/update/{id}")
     public ResponseEntity<String> updateDepartment (@PathVariable("id") Long id,@RequestParam("Department") String newName) throws Exception{
         departmentService.update(id, newName);
         return new ResponseEntity<>("Department updated!",HttpStatus.OK);
@@ -60,13 +61,13 @@ public class DepartmentController {
         MemberDto memberDto = departmentService.getSecretary(id);
         return new ResponseEntity<>(memberDto,HttpStatus.OK);
     }
-    @PutMapping("/updateSecretary/")
-    public ResponseEntity<String> putSecretary(@RequestParam Long departmentId, @RequestParam Long memberId) throws Exception{
+    @PatchMapping("/{id}/updateSecretary")
+    public ResponseEntity<String> putSecretary(@PathVariable("id") Long departmentId, @RequestParam Long memberId) throws Exception{
         departmentService.putSecretary(departmentId,memberId);
         return new ResponseEntity<>("Secretary posted",HttpStatus.OK);
     }
-    @PutMapping("/updateHandler/")
-    public ResponseEntity<String> putHandler(@RequestParam Long departmentId, @RequestParam Long memberId) throws Exception{
+    @PatchMapping("/{id}/updateHandler")
+    public ResponseEntity<String> putHandler(@PathVariable("id") Long departmentId, @RequestParam Long memberId) throws Exception{
         departmentService.putHandler(departmentId,memberId);
         return new ResponseEntity<>("Handler posted",HttpStatus.OK);
     }
@@ -74,6 +75,16 @@ public class DepartmentController {
     public ResponseEntity<MemberDto> findHandler (@PathVariable("id") Long id) throws Exception{
         MemberDto memberDto = departmentService.getHandler(id);
         return new ResponseEntity<>(memberDto,HttpStatus.OK);
+    }
+    @GetMapping("/{id}/handler/history")
+    public ResponseEntity<List<ManagementDto>> findHandlerHistory (@PathVariable("id") Long id) throws Exception{
+        List<ManagementDto> managementDtos = departmentService.getHandlerHistory(id);
+        return new ResponseEntity<>(managementDtos,HttpStatus.OK);
+    }
+    @GetMapping("/{id}/secretary/history")
+    public ResponseEntity<List<ManagementDto>> findSecretaryHistory (@PathVariable("id") Long id) throws Exception{
+        List<ManagementDto> managementDtos = departmentService.getSecretaryHistory(id);
+        return new ResponseEntity<>(managementDtos,HttpStatus.OK);
     }
     @GetMapping("/{id}/subjects")
     public ResponseEntity<List<SubjectDto>> findSubjects(@PathVariable("id") Long id) throws Exception{

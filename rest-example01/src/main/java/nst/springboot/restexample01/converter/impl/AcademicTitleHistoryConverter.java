@@ -20,8 +20,10 @@ public class AcademicTitleHistoryConverter implements DtoEntityConverter<Academi
     @Override
     public AcademicTitleHistoryDto toDto(AcademicTitleHistory academicTitleHistory) {
         return new AcademicTitleHistoryDto(academicTitleHistory.getId(),
-                memberConverter.toDto(academicTitleHistory.getMember()),academicTitleHistory.getStartDate(),
-                academicTitleHistory.getEndDate(),academicTitleHistory.getAcademicTitle().getTitle(),
+                memberConverter.toDto(academicTitleHistory.getMember()),
+                academicTitleHistory.getStartDate(),
+                academicTitleHistory.getEndDate(),
+                academicTitleHistory.getAcademicTitle().getTitle(),
                 academicTitleHistory.getScientificField().getScfField());
     }
 
@@ -29,8 +31,9 @@ public class AcademicTitleHistoryConverter implements DtoEntityConverter<Academi
     public AcademicTitleHistory toEntity(AcademicTitleHistoryDto academicTitleHistoryDto) {
         return new AcademicTitleHistory(academicTitleHistoryDto.getId(),
                 memberConverter.toEntity(academicTitleHistoryDto.getMemberDto()),
-                academicTitleHistoryDto.getStartDate(),academicTitleHistoryDto.getEndDate(),
-                academicTitleRepository.findByTitle(academicTitleHistoryDto.getAcademicTitle()).get(),
-                scientificFieldRepository.findByScfField(academicTitleHistoryDto.getScientificField()).get());
+                academicTitleHistoryDto.getStartDate(),
+                academicTitleHistoryDto.getEndDate(),
+                academicTitleRepository.findByTitleIgnoreCase(academicTitleHistoryDto.getAcademicTitle()).get(),
+                scientificFieldRepository.findByScfFieldIgnoreCase(academicTitleHistoryDto.getScientificField()).get());
     }
 }

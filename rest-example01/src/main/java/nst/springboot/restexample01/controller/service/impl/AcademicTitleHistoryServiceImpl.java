@@ -1,5 +1,7 @@
 package nst.springboot.restexample01.controller.service.impl;
 
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import nst.springboot.restexample01.controller.domain.AcademicTitle;
 import nst.springboot.restexample01.controller.domain.AcademicTitleHistory;
 import nst.springboot.restexample01.controller.domain.Member;
@@ -42,20 +44,21 @@ public class AcademicTitleHistoryServiceImpl implements AcademicTitleHistoryServ
     @Override
     public AcademicTitleHistoryDto save(Long memberId, LocalDate startDate, String academicTitle) throws Exception {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new Exception("Member does not exist!"));
-        if(!startDate.isEqual(LocalDate.now()) && !startDate.isBefore(LocalDate.now())){throw new Exception("Date is not valid! It can not be date from future!");}
+                .orElseThrow(() -> new EntityNotFoundException("Member does not exist!"));
+
+        if(!startDate.isEqual(LocalDate.now()) && !startDate.isBefore(LocalDate.now())){throw new IllegalArgumentException("Date is not valid! It can not be date from future!");}
 
         String scientificField = member.getScientificField().getScfField();
 
-        AcademicTitle academicTitleObj = academicTitleRepository.findByTitle(academicTitle)
-                .orElseThrow(() -> new Exception("Academic title " + academicTitle + " does not exist!"));
+        AcademicTitle academicTitleObj = academicTitleRepository.findByTitleIgnoreCase(academicTitle)
+                .orElseThrow(() -> new EntityNotFoundException("Academic title " + academicTitle + " does not exist!"));
 
-        ScientificField scientificFieldObj = scientificFieldRepository.findByScfField(scientificField).get();
+        ScientificField scientificFieldObj = scientificFieldRepository.findByScfFieldIgnoreCase(scientificField).get();
 
         Optional<AcademicTitleHistory> check = academicTitleHistoryRepository.findByMemberIdAndAcademicTitleTitle(memberId,academicTitle);
 
         if(check.isPresent()){
-            throw new Exception
+            throw new EntityExistsException
                     ("Member with " + memberId + " with academic title " + academicTitle + " in scientific field " + scientificField + " already exist!");
         }
 
@@ -79,27 +82,27 @@ public class AcademicTitleHistoryServiceImpl implements AcademicTitleHistoryServ
     @Override
     public AcademicTitleHistoryDto savePrevious(Long memberId, LocalDate startDate, LocalDate endDate, String academicTitle) throws Exception {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new Exception("Member does not exist!"));
-        if(!startDate.isEqual(endDate) && !startDate.isBefore(endDate)){throw new Exception("End date must be after start date!");}
+                .orElseThrow(() -> new EntityNotFoundException("Member does not exist!"));
+        if(!startDate.isEqual(endDate) && !startDate.isBefore(endDate)){throw new IllegalArgumentException("End date must be after start date!");}
 
         String scientificField = member.getScientificField().getScfField();
 
-        AcademicTitle academicTitleObj = academicTitleRepository.findByTitle(academicTitle)
-                .orElseThrow(() -> new Exception("Academic title " + academicTitle + " does not exist!"));
+        AcademicTitle academicTitleObj = academicTitleRepository.findByTitleIgnoreCase(academicTitle)
+                .orElseThrow(() -> new EntityNotFoundException("Academic title " + academicTitle + " does not exist!"));
 
-        ScientificField scientificFieldObj = scientificFieldRepository.findByScfField(scientificField).get();
+        ScientificField scientificFieldObj = scientificFieldRepository.findByScfFieldIgnoreCase(scientificField).get();
 
         Optional<AcademicTitleHistory> check = academicTitleHistoryRepository.findByMemberIdAndAcademicTitleTitle(memberId,academicTitle);
 
         if(check.isPresent()){
-            throw new Exception
+            throw new EntityExistsException
                     ("Member with " + memberId + " with academic title " + academicTitle + " in scientific field " + scientificField + " already exist!");
         }
 
         AcademicTitleHistory current = academicTitleHistoryRepository.findByEndDateIsNullAndMemberId(memberId).get();
 
         if(endDate.isAfter(current.getStartDate())){
-            throw new Exception("Dates are not valid! Completed record is later than current one according to dates!");
+            throw new IllegalArgumentException("Dates are not valid! Completed record is later than current one according to dates!");
         }
 
         AcademicTitleHistory academicTitleHistory = new AcademicTitleHistory();
@@ -136,7 +139,7 @@ public class AcademicTitleHistoryServiceImpl implements AcademicTitleHistoryServ
 
     @Override
     public void update(Long id, LocalDate endDate) throws Exception {
-        memberRepository.findById(id).orElseThrow(() -> new Exception("Member does not exist!"));
+        memberRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Member does not exist!"));
 
         Optional<AcademicTitleHistory> academicTitleHistory = academicTitleHistoryRepository
                 .findByEndDateIsNullAndMemberId(id);
@@ -149,17 +152,19 @@ public class AcademicTitleHistoryServiceImpl implements AcademicTitleHistoryServ
 
     @Override
     public AcademicTitleHistoryDto findById(Long id) throws Exception {
-        AcademicTitleHistory academicTitleHistory = academicTitleHistoryRepository.findById(id).orElseThrow(()->new Exception("Academic title history does not exist!"));
+        AcademicTitleHistory academicTitleHistory = academicTitleHistoryRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("Academic title history does not exist!"));
        return academicTitleHistoryConverter.toDto(academicTitleHistory);
     }
 
     @Override
     public List<AcademicTitleHistoryDto> getAllByMember(Long id) throws Exception{
-        Member member = memberRepository.findById(id).orElseThrow(()->new Exception("Member does not exist!"));
+        Member member = memberRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("Member does not exist!"));
 
         List<AcademicTitleHistoryDto> list = academicTitleHistoryRepository.findByMemberId(id).stream().map(academicTitleHistory -> academicTitleHistoryConverter.toDto(academicTitleHistory)).collect(Collectors.toList());
         if(list.isEmpty()){
-            throw new Exception("There are no records about member " +member.getFirstName()+" "+member.getLastName());
+            throw new NullPointerException("There are no records about member " +member.getFirstName()+" "+member.getLastName());
         }
         return list;
     }

@@ -56,23 +56,23 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public MemberDto save(String firstName, String lastName, String academicTitle, String educationTitle, String
             scientificField, String department) throws Exception {
-        if(memberRepository.findByFirstNameAndLastName(firstName,lastName).isPresent()){throw new Exception("Member already exist!");}
+
         Member member = new Member();
         member.setFirstName(firstName);
         member.setLastName(lastName);
-        AcademicTitle academicTitle1 = academicTitleRepository.findByTitle(academicTitle)
-                .orElseGet(() -> academicTitleRepository.save(new AcademicTitle(academicTitleRepository.count() + 1, academicTitle)));
+        AcademicTitle academicTitle1 = academicTitleRepository.findByTitleIgnoreCase(academicTitle)
+                .orElseGet(() -> academicTitleRepository.save(new AcademicTitle(academicTitleRepository.findMaxId() + 1, academicTitle)));
         member.setAcademicTitle(academicTitle1);
 
-        EducationTitle educationTitle1 = educationTitleRepository.findByTitle(educationTitle)
-                .orElseGet(() -> educationTitleRepository.save(new EducationTitle(educationTitleRepository.count() + 1, educationTitle)));
+        EducationTitle educationTitle1 = educationTitleRepository.findByTitleIgnoreCase(educationTitle)
+                .orElseGet(() -> educationTitleRepository.save(new EducationTitle(educationTitleRepository.findMaxId() + 1, educationTitle)));
         member.setEducationTitle(educationTitle1);
 
-        ScientificField scientificField1 = scientificFieldRepository.findByScfField(scientificField)
-                .orElseGet(() -> scientificFieldRepository.save(new ScientificField(scientificFieldRepository.count() + 1, scientificField)));
+        ScientificField scientificField1 = scientificFieldRepository.findByScfFieldIgnoreCase(scientificField)
+                .orElseGet(() -> scientificFieldRepository.save(new ScientificField(scientificFieldRepository.findMaxId() + 1, scientificField)));
         member.setScientificField(scientificField1);
 
-        Department department1 = departmentRepository.findByName(department)
+        Department department1 = departmentRepository.findByNameIgnoreCase(department)
                 .orElseThrow(() -> new EntityNotFoundException("Department with name " + department + " not found."));
         member.setDepartment(department1);
 
@@ -86,14 +86,14 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository
                 .findAll()
                 .stream().map(entity -> memberConverter.toDto(entity))
-                .sorted()
                 .collect(Collectors.toList());
     }
 
     @Override
     public void delete(Long id) throws Exception {
-        Member member = memberRepository.findById(id).orElseThrow(()->new Exception("Member does not exist!"));
-        List<AcademicTitleHistory> academicTitleHistoryList = academicTitleHistoryRepository.findByMemberFirstNameAndMemberLastName(member.getFirstName(),member.getLastName());
+        Member member = memberRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("Member does not exist!"));
+        List<AcademicTitleHistory> academicTitleHistoryList = academicTitleHistoryRepository.findByMemberId(id);
         List<Management> managementList = managementRepository.findByMemberId(id);
         if(academicTitleHistoryList.isEmpty() && managementList.isEmpty()) {
             memberRepository.delete(member);
@@ -112,22 +112,22 @@ public class MemberServiceImpl implements MemberService {
         member.setFirstName(memberDto.getFirstName());
         member.setLastName(memberDto.getLastName());
 
-        AcademicTitle academicTitle = academicTitleRepository.findByTitle(memberDto.getAcademicTitle())
-                .orElseGet(() -> academicTitleRepository.save(new AcademicTitle(academicTitleRepository.count() + 1, memberDto.getAcademicTitle())));
+        AcademicTitle academicTitle = academicTitleRepository.findByTitleIgnoreCase(memberDto.getAcademicTitle())
+                .orElseGet(() -> academicTitleRepository.save(new AcademicTitle(academicTitleRepository.findMaxId() + 1, memberDto.getAcademicTitle())));
         if(!memberDto.getAcademicTitle().equals(member.getAcademicTitle().getTitle())){
             academicTitleHistoryService.save(member.getId(), LocalDate.now(),memberDto.getAcademicTitle());
         }
         member.setAcademicTitle(academicTitle);
 
-        EducationTitle educationTitle = educationTitleRepository.findByTitle(memberDto.getEducationTitle())
-                .orElseGet(() -> educationTitleRepository.save(new EducationTitle(educationTitleRepository.count() + 1, memberDto.getEducationTitle())));
+        EducationTitle educationTitle = educationTitleRepository.findByTitleIgnoreCase(memberDto.getEducationTitle())
+                .orElseGet(() -> educationTitleRepository.save(new EducationTitle(educationTitleRepository.findMaxId() + 1, memberDto.getEducationTitle())));
         member.setEducationTitle(educationTitle);
 
-        ScientificField scientificField = scientificFieldRepository.findByScfField(memberDto.getScientificField())
-                .orElseGet(() -> scientificFieldRepository.save(new ScientificField(scientificFieldRepository.count() + 1, memberDto.getScientificField())));
+        ScientificField scientificField = scientificFieldRepository.findByScfFieldIgnoreCase(memberDto.getScientificField())
+                .orElseGet(() -> scientificFieldRepository.save(new ScientificField(scientificFieldRepository.findMaxId() + 1, memberDto.getScientificField())));
         member.setScientificField(scientificField);
 
-        Department department = departmentRepository.findByName(memberDto.getDepartment())
+        Department department = departmentRepository.findByNameIgnoreCase(memberDto.getDepartment())
                 .orElseThrow(() -> new EntityNotFoundException("Department with name " + memberDto.getDepartment() + " not found."));
         member.setDepartment(department);
 
@@ -136,16 +136,17 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDto findById(Long id) throws Exception {
-        Member member = memberRepository.findById(id).orElseThrow(()->new Exception("Member does not exist!"));
+        Member member = memberRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("Member does not exist!"));
         return memberConverter.toDto(member);
 
     }
 
     @Override
     public List<AcademicTitleHistoryDto> getHistory(Long id) throws Exception {
-        memberRepository.findById(id).orElseThrow(()->new Exception("Member does not exist!"));
+        memberRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Member does not exist!"));
         List<AcademicTitleHistory> history = academicTitleHistoryRepository.findByMemberId(id);
-        if(history.isEmpty()){throw new Exception("There are no academic title history for this member");}
+        if(history.isEmpty()){throw new NullPointerException("There are no academic title history for this member");}
         return history
                 .stream().map(academicTitleHistory -> academicTitleHistoryConverter.toDto(academicTitleHistory))
                 .collect(Collectors.toList());
@@ -155,57 +156,54 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public List<MemberDto> getAllByDepartment(Long id) throws Exception {
 
-        Optional<Department> check = departmentRepository.findById(id);
-        if(check.isEmpty()){
-            throw new Exception("Department " + check.get().getName() + " is not exist!");
-        }
+        Department check = departmentRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("Department is not exist!"));
+
         List<Member> list = memberRepository.findByDepartmentId(id);
         if(list.isEmpty()){
-            throw new Exception("There are no members witch department is "+check.get().getName()+"!");
+            throw new NullPointerException("There are no members witch department is "+check.getName()+"!");
         }
         return list.stream().map(member -> memberConverter.toDto(member)).collect(Collectors.toList());
     }
 
     @Override
     public List<MemberDto> getAllByAcademicTitle(Long id) throws Exception {
-        Optional<AcademicTitle> academicT = academicTitleRepository.findById(id);
-        if(academicT.isEmpty()){
-            throw new Exception("Academic title is not exist!");
-        }
+        AcademicTitle academicTitle = academicTitleRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("Academic title is not exist!"));
 
-        List<Member> list = memberRepository.findByAcademicTitleId(id);
-        List<MemberDto> print = list.stream().map(member -> memberConverter.toDto(member)).collect(Collectors.toList());
-        if(print.isEmpty()){
-            throw new Exception("There are no members witch academic title is "+ academicT.get().getTitle() +"!");
+        List<MemberDto> list = memberRepository.findByAcademicTitleId(id)
+                .stream().map(member -> memberConverter.toDto(member)).collect(Collectors.toList());
+        if(list.isEmpty()){
+            throw new NullPointerException("There are no members witch academic title is "+ academicTitle.getTitle() +"!");
         }
-        return print;
+        return list;
     }
 
     @Override
     public List<MemberDto> getAllByEducationTitle(Long id) throws Exception {
-        Optional<EducationTitle> educationT = educationTitleRepository.findById(id);
-        if(educationT.isEmpty()){
-            throw new Exception("Education title is not exist!");
+        EducationTitle educationTitle = educationTitleRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("Education title is not exist!"));
+
+        List<MemberDto> list = memberRepository.findByEducationTitleId(id)
+                .stream().map(member -> memberConverter.toDto(member)).collect(Collectors.toList());
+
+        if(list.isEmpty()){
+            throw new NullPointerException("There are no members witch education title is " + educationTitle.getTitle() + "!");
         }
-        List<Member> list = memberRepository.findByEducationTitleId(id);
-        List<MemberDto> print = list.stream().map(member -> memberConverter.toDto(member)).collect(Collectors.toList());
-        if(print.isEmpty()){
-            throw new Exception("There are no members witch education title is " + educationT.get().getTitle() + "!");
-        }
-        return print;
+        return list;
     }
 
     @Override
     public List<MemberDto> getAllByScientificField(Long id) throws Exception {
-        Optional<ScientificField> scfField = scientificFieldRepository.findById(id);
-        if(scfField.isEmpty()){
-            throw new Exception("Scientific field is not exist!");
+        ScientificField scfField = scientificFieldRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("Scientific field is not exist!"));
+
+        List<MemberDto> list = memberRepository.findByScientificFieldId(id)
+                .stream().map(member -> memberConverter.toDto(member)).collect(Collectors.toList());
+
+        if(list.isEmpty()){
+            throw new NullPointerException("There are no members witch scientific field is " + scfField.getScfField() + "!");
         }
-        List<Member> list = memberRepository.findByScientificFieldId(id);
-        List<MemberDto> print = list.stream().map(member -> memberConverter.toDto(member)).collect(Collectors.toList());
-        if(print.isEmpty()){
-            throw new Exception("There are no members witch scientific field is " + scfField.get().getScfField() + "!");
-        }
-        return print;
+        return list;
     }
 }

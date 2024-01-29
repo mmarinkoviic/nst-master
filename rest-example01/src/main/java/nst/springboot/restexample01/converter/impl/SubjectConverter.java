@@ -28,7 +28,7 @@ public class SubjectConverter implements DtoEntityConverter<SubjectDto, Subject>
                 dto.getId(), 
                 dto.getName(), 
                 dto.getEsbp(),
-                departmentRepository.findByName(dto.getDepartment()).get());
+                departmentRepository.findByNameIgnoreCase(dto.getDepartment()).get());
     }
     
 }

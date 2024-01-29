@@ -1,5 +1,7 @@
 package nst.springboot.restexample01.controller.service.impl;
 
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import nst.springboot.restexample01.controller.domain.EducationTitle;
 import nst.springboot.restexample01.controller.domain.Member;
 import nst.springboot.restexample01.controller.repository.EducationTitleRepository;
@@ -32,11 +34,11 @@ public class EducationTitleServiceImpl implements EducationTitleService {
     @Transactional
     public EducationTitleDto save(String name) throws Exception {
 
-        Optional<EducationTitle> check = educationTitleRepository.findByTitle(name);
+        Optional<EducationTitle> check = educationTitleRepository.findByTitleIgnoreCase(name);
         if(check.isPresent()){
-            throw new Exception("Education title " + name + " already exist!");
+            throw new EntityExistsException("Education title " + name + " already exist!");
         }
-        EducationTitle educationTitle = new EducationTitle(educationTitleRepository.count()+1,name);
+        EducationTitle educationTitle = new EducationTitle(educationTitleRepository.findMaxId()+1,name);
         educationTitle = educationTitleRepository.save(educationTitle);
         return educationTitleConverter.toDto(educationTitle);
     }
@@ -51,7 +53,7 @@ public class EducationTitleServiceImpl implements EducationTitleService {
     @Override
     public void delete(Long id) throws Exception {
         EducationTitle educationTitle = educationTitleRepository.findById(id)
-                .orElseThrow(()->new Exception("Education title does not exist!"));
+                .orElseThrow(()->new EntityNotFoundException("Education title does not exist!"));
         List<Member> memberList = memberRepository.findByEducationTitleId(id);
         if(memberList.isEmpty()) {
             educationTitleRepository.delete(educationTitle);
@@ -63,15 +65,15 @@ public class EducationTitleServiceImpl implements EducationTitleService {
     @Override
     public EducationTitleDto findById(Long id) throws Exception {
         EducationTitle educationTitle = educationTitleRepository.findById(id)
-                .orElseThrow(()->new Exception("Education title does not exist!"));
+                .orElseThrow(()->new EntityNotFoundException("Education title does not exist!"));
         return educationTitleConverter.toDto(educationTitle);
     }
 
     @Override
     public void update(Long id, String newName) throws Exception {
-        if(educationTitleRepository.findByTitle(newName.toLowerCase()).isPresent()){throw new Exception("Education title " + newName + " already exist!");}
+        if(educationTitleRepository.findByTitleIgnoreCase(newName).isPresent()){throw new EntityExistsException("Education title " + newName + " already exist!");}
         EducationTitle educationTitle = educationTitleRepository.findById(id)
-                .orElseThrow(()->new Exception("Education title with id " + id + " does not exist!"));
+                .orElseThrow(()->new EntityNotFoundException("Education title with id " + id + " does not exist!"));
         educationTitle.setTitle(newName);
         educationTitleRepository.save(educationTitle);
     }

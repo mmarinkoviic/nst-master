@@ -19,14 +19,14 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @GetMapping("/get-all")
+    @GetMapping()
     public ResponseEntity<List<MemberDto>> getAll() {
         List<MemberDto> members = memberService.getAll();
         return new ResponseEntity<>(members, HttpStatus.OK);
     }
 
-    @GetMapping("/find-by-id")
-    public MemberDto findById(@RequestParam("ID") Long id) throws Exception {
+    @GetMapping("/{id}")
+    public MemberDto findById(@PathVariable("id") Long id) throws Exception {
         return memberService.findById(id);
     }
 
@@ -48,7 +48,7 @@ public class MemberController {
         return new ResponseEntity<>(memberDto, HttpStatus.CREATED);
     }
 
-    @PutMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity<String> updateMember (@Valid @RequestBody MemberDto memberDto) throws Exception{
         memberService.update(memberDto);
         return new ResponseEntity<>("Member updated!",HttpStatus.OK);
@@ -59,23 +59,23 @@ public class MemberController {
         return new ResponseEntity<>(academicTitleHistoryDtos,HttpStatus.OK);
     }
 
-    @GetMapping("/by-department/{id}")
+    @GetMapping("/department/{id}")
     public ResponseEntity<List<MemberDto>> getAllByDepartment(@PathVariable("id") Long id) throws Exception{
         List<MemberDto> memberList = memberService.getAllByDepartment(id);
         return new ResponseEntity<>(memberList, HttpStatus.OK);
     }
 
-    @GetMapping("/by-academic-title/{id}")
+    @GetMapping("/academic-title/{id}")
     public ResponseEntity<List<MemberDto>> getAllByAcademicTitle(@PathVariable("id") Long id) throws Exception{
         List<MemberDto> memberList = memberService.getAllByAcademicTitle(id);
         return new ResponseEntity<>(memberList, HttpStatus.OK);
     }
-    @GetMapping("/by-education-title/{id}")
+    @GetMapping("/education-title/{id}")
     public ResponseEntity<List<MemberDto>> getAllByEducationTitle(@PathVariable("id") Long id) throws Exception{
         List<MemberDto> memberList = memberService.getAllByEducationTitle(id);
         return new ResponseEntity<>(memberList, HttpStatus.OK);
     }
-    @GetMapping("/by-scientific-field/{id}")
+    @GetMapping("/scientific-field/{id}")
     public ResponseEntity<List<MemberDto>> getAllByScientificField(@PathVariable("id") Long id) throws Exception{
         List<MemberDto> memberList = memberService.getAllByScientificField(id);
         return new ResponseEntity<>(memberList, HttpStatus.OK);

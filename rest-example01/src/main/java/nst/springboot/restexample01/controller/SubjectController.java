@@ -39,7 +39,7 @@ public class SubjectController {
         return subjectService.findById(id);
     }
 
-    @PutMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity<String> updateSubject (@Valid @RequestBody SubjectDto subject) throws Exception{
         subjectService.update(subject);
         return new ResponseEntity<>("Subject updated!",HttpStatus.OK);
@@ -51,7 +51,7 @@ public class SubjectController {
         return new ResponseEntity<>("Subject removed!", HttpStatus.OK);
     }
 
-    @GetMapping("/by-department/{id}")
+    @GetMapping("/department/{id}")
     public ResponseEntity<List<SubjectDto>> getByDepartmentName(@PathVariable("id") Long id) throws Exception {
         List<SubjectDto> subjects = subjectService.findByDepartment(id);
         return new ResponseEntity<>(subjects, HttpStatus.OK);

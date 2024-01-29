@@ -1,6 +1,10 @@
 package nst.springboot.restexample01.controller.service.impl;
 
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
+import nst.springboot.restexample01.controller.domain.Department;
 import nst.springboot.restexample01.controller.domain.Management;
+import nst.springboot.restexample01.controller.domain.Member;
 import nst.springboot.restexample01.controller.repository.DepartmentRepository;
 import nst.springboot.restexample01.controller.repository.ManagementRepository;
 import nst.springboot.restexample01.controller.repository.MemberRepository;
@@ -31,39 +35,40 @@ public class ManagementServiceImpl implements ManagementService {
 
     @Transactional
     @Override
-    public ManagementDto save(String departmentName, String firstName, String lastName, String role, LocalDate startDate) throws Exception {
+    public ManagementDto save(Long departmentId,Long memberId, String role, LocalDate startDate) throws Exception {
 
-        if(!role.equals("handler") && !role.equals("secretary")) {throw new Exception("Role must be handler or secretary!");}
+        if(!role.equals("handler") && !role.equals("secretary")) {throw new IllegalArgumentException("Role must be handler or secretary!");}
 
-        memberRepository.findByFirstNameAndLastName(firstName,lastName).orElseThrow(() -> new Exception("Member " + firstName + " " + lastName + " does not exist!" ));
+        Member member =memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member does not exist!" ));
 
-        departmentRepository.findByName(departmentName).orElseThrow(()->new Exception("Department " + departmentName + " does not exist!"));
+        Department department = departmentRepository.findById(departmentId)
+                .orElseThrow(()->new EntityNotFoundException("Department does not exist!"));
 
-        if(!startDate.isEqual(LocalDate.now()) && !startDate.isAfter(LocalDate.now())){throw new Exception("Date is not valid!");}
+        if(!startDate.isEqual(LocalDate.now()) && !startDate.isAfter(LocalDate.now())){throw new IllegalArgumentException("Date is not valid!");}
 
-        Management management = new Management(managementRepository.count() + 1, departmentRepository.findByName(departmentName).get(),
-               memberRepository.findByFirstNameAndLastName(firstName, lastName).get(), role, startDate,null);
+        Management management = new Management(managementRepository.findMaxId() + 1, department, member, role, startDate,null);
 
        if(role.equals("handler")){
-           Optional<Management> secretary = managementRepository.findByEndDateIsNullAndDepartmentNameAndRole(departmentName, "secretary");
+           Optional<Management> secretary = managementRepository.findByEndDateIsNullAndDepartmentIdAndRole(departmentId, "secretary");
            if(secretary.isPresent()) {
                if (management.getMember() == secretary.get().getMember()) {
-                   throw new Exception("Member " + firstName + " " + lastName + " is already secretary of department " + departmentName + ".");
+                   throw new EntityExistsException("Member is already secretary of department.");
                }
            }
        }else{
-           Optional<Management> handler = managementRepository.findByEndDateIsNullAndDepartmentNameAndRole(departmentName, "handler");
+           Optional<Management> handler = managementRepository.findByEndDateIsNullAndDepartmentIdAndRole(departmentId, "handler");
            if(handler.isPresent()) {
                if (management.getMember() == handler.get().getMember()) {
-                   throw new Exception("Member " + firstName + " " + lastName + " is already handler of department " + departmentName + ".");
+                   throw new EntityExistsException("Member is already handler of department.");
                }
            }
        }
 
-       Optional<Management> check = managementRepository.findByEndDateIsNullAndDepartmentNameAndRole(departmentName, role);
+       Optional<Management> check = managementRepository.findByEndDateIsNullAndDepartmentIdAndRole(departmentId, role);
        if (check.isPresent()) {
            if (management.getMember() == check.get().getMember()) {
-               throw new Exception("Member " + firstName + " " + lastName + " is already " + role + " of department " + departmentName + ".");
+               throw new EntityExistsException("Member is already " + role + " of department.");
            }
            Management update = check.get();
            update.setEndDate(startDate);
@@ -73,21 +78,11 @@ public class ManagementServiceImpl implements ManagementService {
             return managementConverter.toDto(saved);
     }
 
-    @Override
-    public void update(String department, String role, LocalDate date) throws Exception{
-        Optional<Management> check = managementRepository.findByEndDateIsNullAndDepartmentNameAndRole(department,role);
-        if(check.isEmpty()){
-            throw new Exception("There are no record about this department.");
-        }
-        Management management = check.get();
-        management.setEndDate(date);
-        managementRepository.save(management);
-    }
 
     @Override
     public ManagementDto findById(Long id) throws Exception {
         Management management = managementRepository.findById(id)
-                .orElseThrow(() -> new Exception("Management with id " + id + " does not exist!"));
+                .orElseThrow(() -> new EntityNotFoundException("Management with id " + id + " does not exist!"));
         return managementConverter.toDto(management);
 
     }
@@ -102,19 +97,19 @@ public class ManagementServiceImpl implements ManagementService {
 
     @Override
     public List<ManagementDto> findByDepartment(Long id) throws Exception {
-        departmentRepository.findById(id).orElseThrow(() -> new Exception("Department does not exist!" ));
+        departmentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Department does not exist!" ));
 
-        List<Management> list = managementRepository.findByDepartmentId(id);
-        List<ManagementDto> print = list.stream().map(management -> managementConverter.toDto(management)).collect(Collectors.toList());
-        if(print.isEmpty()){
+        List<ManagementDto> list = managementRepository.findByDepartmentId(id)
+                .stream().map(management -> managementConverter.toDto(management)).collect(Collectors.toList());
+        if(list.isEmpty()){
             throw new NullPointerException("There are no currently active members of management.");
         }
-        return print;
+        return list;
     }
 
     @Override
     public List<ManagementDto> findCurrentDepartment(Long id) throws Exception {
-        departmentRepository.findById(id).orElseThrow(() -> new Exception("Department with name does not exist!" ));
+        departmentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Department with name does not exist!" ));
 
         List<Management> list = managementRepository.findByEndDateIsNullAndDepartmentId(id);
         List<ManagementDto> print = list.stream().map(management -> managementConverter.toDto(management)).collect(Collectors.toList());
@@ -131,6 +126,26 @@ public class ManagementServiceImpl implements ManagementService {
         List<ManagementDto> print = list.stream().map(management -> managementConverter.toDto(management)).collect(Collectors.toList());
         if(print.isEmpty()){
             throw new NullPointerException("There are no currently active handlers.");
+        }
+        return print;
+    }
+
+    @Override
+    public List<ManagementDto> getHandlers() throws Exception {
+        List<Management> list = managementRepository.findByRole("handler");
+        List<ManagementDto> print = list.stream().map(management -> managementConverter.toDto(management)).collect(Collectors.toList());
+        if(print.isEmpty()){
+            throw new NullPointerException("There are no records about handlers.");
+        }
+        return print;
+    }
+
+    @Override
+    public List<ManagementDto> getSecretaries() throws Exception {
+        List<Management> list = managementRepository.findByRole("secretary");
+        List<ManagementDto> print = list.stream().map(management -> managementConverter.toDto(management)).collect(Collectors.toList());
+        if(print.isEmpty()){
+            throw new NullPointerException("There are no records about handlers.");
         }
         return print;
     }

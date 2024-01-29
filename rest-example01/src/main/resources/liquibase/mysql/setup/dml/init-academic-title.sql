@@ -1,5 +1,5 @@
-insert into tbl_academic_title(title) values ("Assistant");
-insert into tbl_academic_title(title) values ("Associate professor");
-insert into tbl_academic_title(title) values ("Full professor");
-insert into tbl_academic_title(title) values ("Professor");
-insert into tbl_academic_title(title) values ("Emeritus professor");
+insert into tbl_academic_title(title) values ("assistant");
+insert into tbl_academic_title(title) values ("associate professor");
+insert into tbl_academic_title(title) values ("full professor");
+insert into tbl_academic_title(title) values ("professor");
+insert into tbl_academic_title(title) values ("emeritus professor");

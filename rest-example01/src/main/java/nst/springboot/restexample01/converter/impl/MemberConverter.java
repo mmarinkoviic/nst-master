@@ -29,8 +29,10 @@ public class MemberConverter implements DtoEntityConverter<MemberDto, Member> {
 
     @Override
     public Member toEntity(MemberDto memberDto) {
-        return new Member(memberDto.getId(), memberDto.getFirstName(), memberDto.getLastName(), academicTitleRepository.findByTitle(memberDto.getAcademicTitle()).get(),
-                educationTitleRepository.findByTitle(memberDto.getEducationTitle()).get(),scientificFieldRepository.findByScfField(memberDto.getScientificField()).get(),
-                departmentRepository.findByName(memberDto.getDepartment()).get());
+        return new Member(memberDto.getId(), memberDto.getFirstName(), memberDto.getLastName(),
+                academicTitleRepository.findByTitleIgnoreCase(memberDto.getAcademicTitle()).get(),
+                educationTitleRepository.findByTitleIgnoreCase(memberDto.getEducationTitle()).get(),
+                scientificFieldRepository.findByScfFieldIgnoreCase(memberDto.getScientificField()).get(),
+                departmentRepository.findByNameIgnoreCase(memberDto.getDepartment()).get());
     }
 }

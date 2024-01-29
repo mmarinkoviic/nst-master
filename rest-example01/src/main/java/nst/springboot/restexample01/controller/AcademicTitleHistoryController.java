@@ -17,7 +17,7 @@ public class AcademicTitleHistoryController {
         this.academicTitleHistoryService = academicTitleHistoryService;
     }
 
-    @GetMapping("/all")
+    @GetMapping()
     public ResponseEntity<List<AcademicTitleHistoryDto>> getAll() {
         List<AcademicTitleHistoryDto> academicTitleHistoryList = academicTitleHistoryService.getAll();
         return new ResponseEntity<>(academicTitleHistoryList, HttpStatus.OK);

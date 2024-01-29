@@ -16,13 +16,12 @@ public class ManagementController {
     public ManagementController(ManagementService managementService){this.managementService = managementService;}
 
     @PostMapping("/save")
-    public ResponseEntity<ManagementDto> save(@RequestParam("Department Name") String departmentName,
-                                              @RequestParam("First Name") String firstName,
-                                              @RequestParam("Last Name") String lastName,
+    public ResponseEntity<ManagementDto> save(@RequestParam("Department ID") Long departmentId,
+                                              @RequestParam("Member ID") Long memberId,
                                               @RequestParam("Role") String role,
                                               @RequestParam("Start Date") LocalDate startDate) throws Exception {
 
-        ManagementDto managementDto = managementService.save(departmentName,firstName,lastName,role,startDate);
+        ManagementDto managementDto = managementService.save(departmentId,memberId,role,startDate);
         return new ResponseEntity<>(managementDto, HttpStatus.CREATED);
     }
 
@@ -43,20 +42,30 @@ public class ManagementController {
         return new ResponseEntity<>(management,HttpStatus.OK);
     }
 
-    @GetMapping("/department/current/{id}")
+    @GetMapping("/department/{id}/current")
     public ResponseEntity<List<ManagementDto>> managementOfDepartment(@PathVariable("id") Long id) throws Exception{
         List<ManagementDto> management = managementService.findCurrentDepartment(id);
         return new ResponseEntity<>(management,HttpStatus.OK);
     }
 
-    @GetMapping("/current-handlers")
+    @GetMapping("/handlers/current")
     public ResponseEntity<List<ManagementDto>> currentHandlers() throws Exception{
         List<ManagementDto> management = managementService.currentHandlers();
         return new ResponseEntity<>(management,HttpStatus.OK);
     }
-    @GetMapping("/current-secretaries")
+    @GetMapping("/handlers")
+    public ResponseEntity<List<ManagementDto>> getHandlers() throws Exception{
+        List<ManagementDto> management = managementService.getHandlers();
+        return new ResponseEntity<>(management,HttpStatus.OK);
+    }
+    @GetMapping("/secretaries/current")
     public ResponseEntity<List<ManagementDto>> currentSecretaries() throws Exception{
         List<ManagementDto> management = managementService.currentSecretary();
+        return new ResponseEntity<>(management,HttpStatus.OK);
+    }
+    @GetMapping("/secretaries")
+    public ResponseEntity<List<ManagementDto>> getSecretaries() throws Exception{
+        List<ManagementDto> management = managementService.getSecretaries();
         return new ResponseEntity<>(management,HttpStatus.OK);
     }
     @DeleteMapping("/delete")

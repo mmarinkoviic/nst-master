@@ -1,5 +1,7 @@
 package nst.springboot.restexample01.controller.service.impl;
 
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import nst.springboot.restexample01.controller.domain.EducationTitle;
 import nst.springboot.restexample01.controller.domain.Member;
 import nst.springboot.restexample01.controller.domain.ScientificField;
@@ -8,6 +10,7 @@ import nst.springboot.restexample01.controller.repository.ScientificFieldReposit
 import nst.springboot.restexample01.controller.service.ScientificFieldService;
 import nst.springboot.restexample01.converter.impl.ScientificFieldConverter;
 import nst.springboot.restexample01.dto.ScientificFieldDto;
+import org.hibernate.ObjectDeletedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,13 +33,14 @@ public class ScientificFieldServiceImpl implements ScientificFieldService {
 
     @Override
     public ScientificFieldDto save(String name) throws Exception {
-        Optional<ScientificField> check = scientificFieldRepository.findByScfField(name);
+        Optional<ScientificField> check = scientificFieldRepository.findByScfFieldIgnoreCase(name);
         if(check.isPresent()){
-            throw new Exception("Scientific field " + name + " already exist!");
+            throw new EntityExistsException("Scientific field " + name + " already exist!");
         }
-        ScientificField scientificField = new ScientificField(scientificFieldRepository.count()+1,name);
+        ScientificField scientificField = new ScientificField(scientificFieldRepository.findMaxId()+1,name);
         scientificField = scientificFieldRepository.save(scientificField);
         return scientificFieldConverter.toDto(scientificField);
+
     }
 
     @Override
@@ -49,7 +53,7 @@ public class ScientificFieldServiceImpl implements ScientificFieldService {
     @Override
     public void delete(Long id) throws Exception {
         ScientificField scientificField = scientificFieldRepository.findById(id)
-                .orElseThrow(()->new Exception("Scientific field does not exist!"));
+                .orElseThrow(()->new EntityNotFoundException("Scientific field does not exist!"));
         List<Member> memberList = memberRepository.findByScientificFieldId(id);
         if(memberList.isEmpty()) {
             scientificFieldRepository.delete(scientificField);
@@ -61,15 +65,15 @@ public class ScientificFieldServiceImpl implements ScientificFieldService {
     @Override
     public ScientificFieldDto findById(Long id) throws Exception {
         ScientificField scientificField = scientificFieldRepository.findById(id)
-                .orElseThrow(()->new Exception("Scientific field does not exist!"));
+                .orElseThrow(()->new EntityNotFoundException("Scientific field does not exist!"));
         return scientificFieldConverter.toDto(scientificField);
     }
 
     @Override
     public void update(Long id, String newName) throws Exception {
-        if(scientificFieldRepository.findByScfField(newName).isPresent()){throw new Exception("Scientific field "+ newName + " already exist!");}
+        if(scientificFieldRepository.findByScfFieldIgnoreCase(newName).isPresent()){throw new EntityExistsException("Scientific field "+ newName + " already exist!");}
         ScientificField scientificField = scientificFieldRepository.findById(id)
-                .orElseThrow(()->new Exception("Scientific field with id " + id + " does not exist!"));
+                .orElseThrow(()->new EntityNotFoundException("Scientific field with id " + id + " does not exist!"));
         scientificField.setScfField(newName);
         scientificFieldRepository.save(scientificField);
     }

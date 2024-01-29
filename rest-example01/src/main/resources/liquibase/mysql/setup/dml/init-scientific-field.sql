@@ -1,5 +1,5 @@
-insert into tbl_scientific_field(scf_field) values ("Physical sciences");
-insert into tbl_scientific_field(scf_field) values ("Biological sciences");
-insert into tbl_scientific_field(scf_field) values ("Social sciences");
-insert into tbl_scientific_field(scf_field) values ("Humanities");
-insert into tbl_scientific_field(scf_field) values ("Engineering sciences");
+insert into tbl_scientific_field(scf_field) values ("physical sciences");
+insert into tbl_scientific_field(scf_field) values ("biological sciences");
+insert into tbl_scientific_field(scf_field) values ("social sciences");
+insert into tbl_scientific_field(scf_field) values ("humanities");
+insert into tbl_scientific_field(scf_field) values ("engineering sciences");
