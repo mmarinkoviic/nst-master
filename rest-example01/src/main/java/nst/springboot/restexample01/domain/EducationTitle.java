@@ -1,20 +1,25 @@
-package nst.springboot.restexample01.dto;
+package nst.springboot.restexample01.domain;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-public class EducationTitleDto implements Serializable {
+@Entity
+@Table(name = "tbl_education_title")
+public class EducationTitle implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "Title is an obligatory field!")
+    @NotEmpty(message = "Name is an obligatory field!")
+    @Column(name = "title")
     private String title;
 
-    public EducationTitleDto(){
+    public EducationTitle () {}
 
-    }
-    public EducationTitleDto(Long id, String title) {
+    public EducationTitle (Long id, String title) {
         this.id = id;
         this.title = title;
     }
@@ -39,7 +44,7 @@ public class EducationTitleDto implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EducationTitleDto that = (EducationTitleDto) o;
+        EducationTitle that = (EducationTitle) o;
         return Objects.equals(id, that.id) && Objects.equals(title, that.title);
     }
 

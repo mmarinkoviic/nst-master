@@ -1,6 +1,6 @@
 package nst.springboot.restexample01.controller;
 
-import nst.springboot.restexample01.controller.service.ManagementService;
+import nst.springboot.restexample01.service.ManagementService;
 import nst.springboot.restexample01.dto.ManagementDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

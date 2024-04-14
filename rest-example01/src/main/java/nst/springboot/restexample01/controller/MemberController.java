@@ -1,8 +1,7 @@
 package nst.springboot.restexample01.controller;
 
 import jakarta.validation.Valid;
-import nst.springboot.restexample01.controller.domain.AcademicTitleHistory;
-import nst.springboot.restexample01.controller.service.MemberService;
+import nst.springboot.restexample01.service.MemberService;
 import nst.springboot.restexample01.dto.AcademicTitleHistoryDto;
 import nst.springboot.restexample01.dto.MemberDto;
 import org.springframework.http.HttpStatus;

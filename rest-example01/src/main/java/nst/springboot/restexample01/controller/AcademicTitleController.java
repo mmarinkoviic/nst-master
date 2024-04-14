@@ -1,7 +1,7 @@
 package nst.springboot.restexample01.controller;
 
 
-import nst.springboot.restexample01.controller.service.AcademicTitleService;
+import nst.springboot.restexample01.service.AcademicTitleService;
 import nst.springboot.restexample01.dto.AcademicTitleDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

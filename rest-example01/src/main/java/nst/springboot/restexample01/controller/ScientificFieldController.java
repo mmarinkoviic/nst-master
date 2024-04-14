@@ -1,6 +1,6 @@
 package nst.springboot.restexample01.controller;
 
-import nst.springboot.restexample01.controller.service.ScientificFieldService;
+import nst.springboot.restexample01.service.ScientificFieldService;
 import nst.springboot.restexample01.dto.ScientificFieldDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

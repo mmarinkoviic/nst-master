@@ -3,9 +3,7 @@ package nst.springboot.restexample01.controller;
 import jakarta.validation.Valid;
 import java.util.List;
 
-import nst.springboot.restexample01.controller.domain.Subject;
-import nst.springboot.restexample01.controller.service.DepartmentService;
-import nst.springboot.restexample01.controller.service.ManagementService;
+import nst.springboot.restexample01.service.DepartmentService;
 import nst.springboot.restexample01.dto.DepartmentDto;
 import nst.springboot.restexample01.dto.ManagementDto;
 import nst.springboot.restexample01.dto.MemberDto;

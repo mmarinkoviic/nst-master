@@ -1,10 +1,10 @@
 package nst.springboot.restexample01.converter.impl;
 
-import nst.springboot.restexample01.controller.domain.Member;
-import nst.springboot.restexample01.controller.repository.AcademicTitleRepository;
-import nst.springboot.restexample01.controller.repository.DepartmentRepository;
-import nst.springboot.restexample01.controller.repository.EducationTitleRepository;
-import nst.springboot.restexample01.controller.repository.ScientificFieldRepository;
+import nst.springboot.restexample01.domain.Member;
+import nst.springboot.restexample01.repository.AcademicTitleRepository;
+import nst.springboot.restexample01.repository.DepartmentRepository;
+import nst.springboot.restexample01.repository.EducationTitleRepository;
+import nst.springboot.restexample01.repository.ScientificFieldRepository;
 import nst.springboot.restexample01.converter.DtoEntityConverter;
 import nst.springboot.restexample01.dto.MemberDto;
 import org.springframework.beans.factory.annotation.Autowired;
