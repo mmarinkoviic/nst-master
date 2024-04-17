@@ -45,7 +45,7 @@ public class ManagementServiceImpl implements ManagementService {
         Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(()->new EntityNotFoundException("Department does not exist!"));
 
-        if(!startDate.isEqual(LocalDate.now()) && !startDate.isAfter(LocalDate.now())){throw new IllegalArgumentException("Date is not valid!");}
+        if(!startDate.isEqual(LocalDate.now()) && !startDate.isBefore(LocalDate.now())){throw new IllegalArgumentException("Date is not valid!");}
 
         Management management = new Management(managementRepository.findMaxId() + 1, department, member, role, startDate,null);
 
@@ -169,7 +169,7 @@ public class ManagementServiceImpl implements ManagementService {
 
             managementRepository.delete(mngmt);
         }else {
-            throw new Exception("Management record with " + id + "does not exist!");
+            throw new EntityNotFoundException("Management record with " + id + "does not exist!");
         }
     }
 

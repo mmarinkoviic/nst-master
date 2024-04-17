@@ -133,10 +133,9 @@ public class AcademicTitleHistoryServiceImpl implements AcademicTitleHistoryServ
             if(ath.getEndDate() == null){throw new Exception("It can not be deleted! This record is about active statement!");}
             academicTitleHistoryRepository.delete(ath);
         } else {
-            throw new Exception("Academic title history does not exist!");
+            throw new EntityNotFoundException("Academic title history does not exist!");
         }
     }
-
     @Override
     public void update(Long id, LocalDate endDate) throws Exception {
         memberRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Member does not exist!"));

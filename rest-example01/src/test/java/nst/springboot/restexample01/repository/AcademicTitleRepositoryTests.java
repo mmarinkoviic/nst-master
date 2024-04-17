@@ -20,7 +20,7 @@ public class AcademicTitleRepositoryTests {
 
     @Test
     public void findByTitleIgnoreCaseTest(){
-        AcademicTitle academicTitle = academicTitleRepository.save(new AcademicTitle(10L,"academicTitle10"));
+        AcademicTitle academicTitle = academicTitleRepository.save(new AcademicTitle(10L,"academicTitle100"));
         assertNotNull(academicTitle);
         Optional<AcademicTitle> ac = academicTitleRepository.findByTitleIgnoreCase(academicTitle.getTitle());
         assertTrue(ac.isPresent());
