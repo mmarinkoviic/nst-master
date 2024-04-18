@@ -1,41 +1,16 @@
-name: cache dependencies and do mvn clean install
+name: info checker on starting the app
 
-on:
-  push:
+on: [push, pull_request]
 
 jobs:
-  build:
+  Start:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-          MYSQL_DATABASE: nst2023
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Cache Maven dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'oracle'
-          java-version: '17'
-
-      - name: Build with maven
-        run: mvn clean install
+    steps: 
+      - run: echo "This is automatically triggered job by a ${{ github.event_name }}"
+      - run: echo "OS is ${{ runner.os }}"
+      - run: echo "URL is ${{ env.URL }}"
+      - run: echo "Branch is ${{ github.ref }} on repository ${{ github.repository }}"
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+      - run: echo "The repo ${{ github.repository }} has been cloned"
+      - run: echo "Job status is ${{ job.status }}"
