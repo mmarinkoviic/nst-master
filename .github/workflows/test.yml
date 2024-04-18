@@ -1,16 +1,23 @@
-name: info checker on starting the app
-
-on: [push, pull_request]
-
+name: Build and Test Spring Application
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 jobs:
-  Start:
-    runs-on: ubuntu-latest
-    steps: 
-      - run: echo "This is automatically triggered job by a ${{ github.event_name }}"
-      - run: echo "OS is ${{ runner.os }}"
-      - run: echo "URL is ${{ env.URL }}"
-      - run: echo "Branch is ${{ github.ref }} on repository ${{ github.repository }}"
-      - name: Checkout repository code
-        uses: actions/checkout@v4
-      - run: echo "The repo ${{ github.repository }} has been cloned"
-      - run: echo "Job status is ${{ job.status }}"
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '17'
+      - name: Build with maven
+        run: mvn clean install
