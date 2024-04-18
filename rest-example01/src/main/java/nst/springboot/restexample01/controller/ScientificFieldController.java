@@ -17,7 +17,7 @@ public class ScientificFieldController {
         this.scientificFieldService = scientificFieldService;
     }
 
-    @PostMapping("/save")
+    @PostMapping()
     public ResponseEntity<ScientificFieldDto> save (@RequestParam("Scientific field") String name) throws Exception{
         ScientificFieldDto scientificFieldDto = scientificFieldService.save(name);
         return new ResponseEntity<>(scientificFieldDto, HttpStatus.CREATED);

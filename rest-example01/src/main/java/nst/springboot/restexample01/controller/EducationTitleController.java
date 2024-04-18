@@ -17,7 +17,7 @@ public class EducationTitleController {
     public EducationTitleController(EducationTitleService educationTitleService) {
         this.educationTitleService = educationTitleService;
     }
-    @PostMapping("/save")
+    @PostMapping()
     public ResponseEntity<EducationTitleDto> save (@RequestParam("Education title") String name) throws Exception{
         EducationTitleDto educationTitle = educationTitleService.save(name);
         return new ResponseEntity<>(educationTitle, HttpStatus.CREATED);

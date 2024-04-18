@@ -22,7 +22,7 @@ public class DepartmentController {
         this.departmentService = departmentService;
     }
 
-    @PostMapping("/save")
+    @PostMapping()
     public ResponseEntity<DepartmentDto> save(@Valid @RequestParam("Department Name") String departmentDto) throws Exception {
         DepartmentDto deptDto = departmentService.save(departmentDto);
         return new ResponseEntity<>(deptDto, HttpStatus.CREATED);
@@ -40,7 +40,6 @@ public class DepartmentController {
         DepartmentDto departmentDto = departmentService.findById(id);
         return new ResponseEntity<>(departmentDto,HttpStatus.OK);
     }
-
 
     @PatchMapping("/update/{id}")
     public ResponseEntity<String> updateDepartment (@PathVariable("id") Long id,@RequestParam("Department") String newName) throws Exception{
@@ -62,12 +61,12 @@ public class DepartmentController {
     @PatchMapping("/{id}/updateSecretary")
     public ResponseEntity<String> putSecretary(@PathVariable("id") Long departmentId, @RequestParam Long memberId) throws Exception{
         departmentService.putSecretary(departmentId,memberId);
-        return new ResponseEntity<>("Secretary posted",HttpStatus.OK);
+        return new ResponseEntity<>("Secretary posted!",HttpStatus.OK);
     }
     @PatchMapping("/{id}/updateHandler")
     public ResponseEntity<String> putHandler(@PathVariable("id") Long departmentId, @RequestParam Long memberId) throws Exception{
         departmentService.putHandler(departmentId,memberId);
-        return new ResponseEntity<>("Handler posted",HttpStatus.OK);
+        return new ResponseEntity<>("Handler posted!",HttpStatus.OK);
     }
     @GetMapping("/{id}/handler")
     public ResponseEntity<MemberDto> findHandler (@PathVariable("id") Long id) throws Exception{

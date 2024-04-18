@@ -15,7 +15,7 @@ public class ManagementController {
 
     public ManagementController(ManagementService managementService){this.managementService = managementService;}
 
-    @PostMapping("/save")
+    @PostMapping()
     public ResponseEntity<ManagementDto> save(@RequestParam("Department ID") Long departmentId,
                                               @RequestParam("Member ID") Long memberId,
                                               @RequestParam("Role") String role,
@@ -68,7 +68,7 @@ public class ManagementController {
         List<ManagementDto> management = managementService.getSecretaries();
         return new ResponseEntity<>(management,HttpStatus.OK);
     }
-    @DeleteMapping("/delete")
+    @DeleteMapping()
     public ResponseEntity<String> delete(@RequestParam("ID") Long id) throws Exception {
         managementService.delete(id);
         return new ResponseEntity<>("Record removed!", HttpStatus.OK);
