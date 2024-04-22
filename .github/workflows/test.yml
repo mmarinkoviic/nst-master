@@ -20,4 +20,4 @@ jobs:
           distribution: 'oracle'
           java-version: '17'
       - name: Build with maven
-        run: mvn clean install
+        run: mvn clean install -f rest-example-01/pom.xml
