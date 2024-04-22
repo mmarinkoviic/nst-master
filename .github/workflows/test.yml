@@ -19,6 +19,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+      - run: sudo /etc/init.d/mysql start
       - name: Build with Maven
         run: mvn -B package --file rest-example01/pom.xml 
        
