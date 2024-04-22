@@ -36,34 +36,6 @@
         <sqlFile path="ddl/create-management.sql" relativeToChangelogFile="true"/>
     </changeSet>
     
-    <!-- popuni tabelu depratment-->
-    <changeSet id="init-department" author="m.marinkovic">
-        <sqlFile path="dml/init-department.sql" relativeToChangelogFile="true"/>
-    </changeSet>
-    
-    
-    <changeSet id="init-subject" author="m.marinkovic">
-        <sqlFile path="dml/init-subject.sql" relativeToChangelogFile="true"/>
-    </changeSet>
 
-    <changeSet id="init-academic-title" author="m.marinkovic">
-        <sqlFile path="dml/init-academic-title.sql" relativeToChangelogFile="true"/>
-    </changeSet>
-
-    <changeSet id="init-education-title" author="m.marinkovic">
-        <sqlFile path="dml/init-education-title.sql" relativeToChangelogFile="true"/>
-    </changeSet>
-
-    <changeSet id="init-scientific-field" author="m.marinkovic">
-        <sqlFile path="dml/init-scientific-field.sql" relativeToChangelogFile="true"/>
-    </changeSet>
-
-    <changeSet id="init-member" author="m.marinkovic">
-        <sqlFile path="dml/init-member.sql" relativeToChangelogFile="true"/>
-    </changeSet>
-
-    <changeSet id="init-academic-title-history" author="m.marinkovic">
-        <sqlFile path="dml/init-academic-title-history.sql" relativeToChangelogFile="true"/>
-    </changeSet>
 
 </databaseChangeLog>
