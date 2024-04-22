@@ -1,18 +1,20 @@
 name: Java CI with Maven
 
+
 on:
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-    
+
+
 jobs:
   build:
-    
+
+
     runs-on: ubuntu-latest
-    env:
-      DB_DATABASE: nst2023
-      DB_USER: root
+
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -21,8 +23,5 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-        
-        run: sudo /etc/init.d/mysql start mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" -u$DB_USER -p$DB_PASSWORD
       - name: Build with Maven
-        run: mvn -B package --file rest-example01/pom.xml 
-       
+        run: mvn -B package --file rest-example01/pom.xml
