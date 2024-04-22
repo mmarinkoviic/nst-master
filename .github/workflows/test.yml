@@ -5,12 +5,19 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-
+    
 jobs:
   build:
-
+    
     runs-on: ubuntu-latest
-
+    services:
+     mysql:
+       image: mysql:8.0
+       ports:
+        - '8888:3306'
+       env:
+        MYSQL_ROOT_PASSWORD: rootpass
+        MYSQL_DATABASE: test
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -19,7 +26,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - run: sudo /etc/init.d/mysql start
+      - run: mysql --port 8888 -u root -prootpass -e 'CREATE DATABASE IF NOT EXISTS test;'
       - name: Build with Maven
         run: mvn -B package --file rest-example01/pom.xml 
        
