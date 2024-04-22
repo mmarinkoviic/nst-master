@@ -10,4 +10,6 @@ public interface AcademicTitleRepository extends JpaRepository<AcademicTitle, Lo
     Optional<AcademicTitle> findByTitleIgnoreCase(String name);
     @Query("SELECT MAX(at.id) FROM AcademicTitle at")
     Long findMaxId();
+
+    void deleteByTitleIgnoreCase(String name);
 }

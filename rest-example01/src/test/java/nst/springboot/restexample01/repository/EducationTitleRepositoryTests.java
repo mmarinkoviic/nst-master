@@ -19,8 +19,10 @@ public class EducationTitleRepositoryTests {
 
 
     @Test
+    @Transactional
     public void findByTitleIgnoreCaseTest(){
-        EducationTitle educationTitle = educationTitleRepository.save(new EducationTitle(10L,"educationTitle10"));
+        educationTitleRepository.deleteByTitleIgnoreCase("educationTitle1000");
+        EducationTitle educationTitle = educationTitleRepository.save(new EducationTitle(10L,"educationTitle1000"));
         assertNotNull(educationTitle);
         Optional<EducationTitle> ed = educationTitleRepository.findByTitleIgnoreCase(educationTitle.getTitle());
         assertTrue(ed.isPresent());

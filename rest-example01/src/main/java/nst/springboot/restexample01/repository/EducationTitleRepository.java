@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface EducationTitleRepository extends JpaRepository<EducationTitle, Long> {
-    Optional<EducationTitle> findByTitleIgnoreCase(String name);
+    Optional<EducationTitle> findByTitleIgnoreCase(String title);
     @Query("SELECT MAX(et.id) FROM EducationTitle et")
     Long findMaxId();
+
+    void deleteByTitleIgnoreCase(String title);
 }

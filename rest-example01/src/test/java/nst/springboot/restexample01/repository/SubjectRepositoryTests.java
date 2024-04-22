@@ -22,10 +22,12 @@ public class SubjectRepositoryTests {
     private DepartmentRepository departmentRepository;
 
     @Test
+    @Transactional
     public void findByTitleIgnoreCaseTest(){
+        subjectRepository.deleteByNameIgnoreCase("subject1000");
         Department department = new Department(1L,"department1");
         departmentRepository.save(department);
-        Subject subject = subjectRepository.save(new Subject(1L,"subject1",6,department));
+        Subject subject = subjectRepository.save(new Subject(1L,"subject1000",6,department));
         assertNotNull(subject);
         Optional<Subject> subj = subjectRepository.findByNameIgnoreCase(subject.getName());
         assertTrue(subj.isPresent());

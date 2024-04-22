@@ -12,4 +12,5 @@ public interface DepartmentRepository extends JpaRepository<Department, Long>{
     Optional<Department> findByNameIgnoreCase(String name);
     @Query("SELECT MAX(d.id) FROM Department d")
     Long findMaxId();
+    void deleteByNameIgnoreCase(String name);
 }

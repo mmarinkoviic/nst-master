@@ -2,6 +2,7 @@ package nst.springboot.restexample01.repository;
 
 import nst.springboot.restexample01.domain.AcademicTitle;
 import nst.springboot.restexample01.domain.EducationTitle;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,10 @@ public class AcademicTitleRepositoryTests {
     private AcademicTitleRepository academicTitleRepository;
 
     @Test
+    @Transactional
     public void findByTitleIgnoreCaseTest(){
-        AcademicTitle academicTitle = academicTitleRepository.save(new AcademicTitle(10L,"academicTitle100"));
+        academicTitleRepository.deleteByTitleIgnoreCase("academicTitle1000");
+        AcademicTitle academicTitle = academicTitleRepository.save(new AcademicTitle(1000L,"academicTitle1000"));
         assertNotNull(academicTitle);
         Optional<AcademicTitle> ac = academicTitleRepository.findByTitleIgnoreCase(academicTitle.getTitle());
         assertTrue(ac.isPresent());

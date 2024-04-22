@@ -11,4 +11,5 @@ public interface ScientificFieldRepository extends JpaRepository<ScientificField
     Optional<ScientificField> findByScfFieldIgnoreCase(String name);
     @Query("SELECT MAX(sf.id) FROM ScientificField sf")
     Long findMaxId();
+    void deleteByScfFieldIgnoreCase (String name);
 }

@@ -18,8 +18,10 @@ public class ScientificFieldRepositoryTests {
     private ScientificFieldRepository scientificFieldRepository;
 
     @Test
+    @Transactional
     public void findByTitleIgnoreCaseTest(){
-        ScientificField scientificField = scientificFieldRepository.save(new ScientificField(1L,"scientificField1"));
+        scientificFieldRepository.deleteByScfFieldIgnoreCase("scientificField1000");
+        ScientificField scientificField = scientificFieldRepository.save(new ScientificField(1L,"scientificField1000"));
         assertNotNull(scientificField);
         Optional<ScientificField> scF = scientificFieldRepository.findByScfFieldIgnoreCase(scientificField.getScfField());
         assertTrue(scF.isPresent());

@@ -12,4 +12,5 @@ public interface SubjectRepository extends JpaRepository<Subject, Long>{
     List<Subject> findByDepartmentId(Long id);
     @Query("SELECT MAX(s.id) FROM Subject s")
     Long findMaxId();
+    void deleteByNameIgnoreCase(String name);
 }

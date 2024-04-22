@@ -17,8 +17,10 @@ public class DepartmentRepositoryTests {
 
 
     @Test
+    @Transactional
     public void findByNameIgnoreCaseTest(){
-        Department department = departmentRepository.save(new Department(1L,"Department1"));
+        departmentRepository.deleteByNameIgnoreCase("Department1000");
+        Department department = departmentRepository.save(new Department(1L,"Department1000"));
         assertNotNull(department);
         Optional<Department> dep = departmentRepository.findByNameIgnoreCase(department.getName());
         assertTrue(dep.isPresent());
