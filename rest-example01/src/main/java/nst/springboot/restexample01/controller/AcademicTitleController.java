@@ -1,7 +1,7 @@
 package nst.springboot.restexample01.controller;
 
 
-import nst.springboot.restexample01.controller.service.AcademicTitleService;
+import nst.springboot.restexample01.service.AcademicTitleService;
 import nst.springboot.restexample01.dto.AcademicTitleDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class AcademicTitleController {
     public AcademicTitleController(AcademicTitleService academicTitleService) {
         this.academicTitleService = academicTitleService;
     }
-    @PostMapping("/save")
+    @PostMapping()
     public ResponseEntity<AcademicTitleDto> save (@RequestParam("Academic title") String name) throws Exception{
         AcademicTitleDto academicTitle = academicTitleService.save(name);
         return new ResponseEntity<>(academicTitle, HttpStatus.CREATED);

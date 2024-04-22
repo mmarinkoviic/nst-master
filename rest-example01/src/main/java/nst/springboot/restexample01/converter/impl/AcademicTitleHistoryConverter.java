@@ -1,8 +1,8 @@
 package nst.springboot.restexample01.converter.impl;
 
-import nst.springboot.restexample01.controller.domain.AcademicTitleHistory;
-import nst.springboot.restexample01.controller.repository.AcademicTitleRepository;
-import nst.springboot.restexample01.controller.repository.ScientificFieldRepository;
+import nst.springboot.restexample01.domain.AcademicTitleHistory;
+import nst.springboot.restexample01.repository.AcademicTitleRepository;
+import nst.springboot.restexample01.repository.ScientificFieldRepository;
 import nst.springboot.restexample01.converter.DtoEntityConverter;
 import nst.springboot.restexample01.dto.AcademicTitleHistoryDto;
 import org.springframework.beans.factory.annotation.Autowired;

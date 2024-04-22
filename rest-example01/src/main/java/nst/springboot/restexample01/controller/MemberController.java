@@ -1,8 +1,7 @@
 package nst.springboot.restexample01.controller;
 
 import jakarta.validation.Valid;
-import nst.springboot.restexample01.controller.domain.AcademicTitleHistory;
-import nst.springboot.restexample01.controller.service.MemberService;
+import nst.springboot.restexample01.service.MemberService;
 import nst.springboot.restexample01.dto.AcademicTitleHistoryDto;
 import nst.springboot.restexample01.dto.MemberDto;
 import org.springframework.http.HttpStatus;
@@ -31,18 +30,18 @@ public class MemberController {
     }
 
 
-    @DeleteMapping("/delete")
+    @DeleteMapping()
     public ResponseEntity<String> delete(@RequestParam("ID") Long id) throws Exception {
         memberService.delete(id);
         return new ResponseEntity<>("Member removed!", HttpStatus.OK);
     }
 
-    @PostMapping("/save")
+    @PostMapping()
     public ResponseEntity<MemberDto> save(@RequestParam("First Name") String firstName,
                                           @RequestParam("Last Name") String lastName,
                                           @RequestParam("Academic Title") String academicTitle,
                                           @RequestParam("Education Title") String educationTitle,
-                                          @RequestParam("Scientific Filed") String scientificField,
+                                          @RequestParam("Scientific Field") String scientificField,
                                           @RequestParam("Department") String department) throws Exception {
         MemberDto memberDto = memberService.save(firstName,lastName,academicTitle,educationTitle,scientificField,department);
         return new ResponseEntity<>(memberDto, HttpStatus.CREATED);

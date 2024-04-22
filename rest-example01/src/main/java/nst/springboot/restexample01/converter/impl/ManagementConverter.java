@@ -1,7 +1,7 @@
 package nst.springboot.restexample01.converter.impl;
 
-import nst.springboot.restexample01.controller.domain.Management;
-import nst.springboot.restexample01.controller.repository.DepartmentRepository;
+import nst.springboot.restexample01.domain.Management;
+import nst.springboot.restexample01.repository.DepartmentRepository;
 import nst.springboot.restexample01.converter.DtoEntityConverter;
 import nst.springboot.restexample01.dto.ManagementDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ public class ManagementConverter implements DtoEntityConverter<ManagementDto, Ma
     @Autowired
     private MemberConverter memberConverter;
     @Autowired
-    private DepartmentRepository departmentRepository;
+    public DepartmentRepository departmentRepository;
 
     @Override
     public ManagementDto toDto(Management management) {

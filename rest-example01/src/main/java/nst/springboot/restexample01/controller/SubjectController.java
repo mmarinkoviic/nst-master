@@ -3,8 +3,7 @@ package nst.springboot.restexample01.controller;
 import jakarta.validation.Valid;
 import java.util.List;
 
-import nst.springboot.restexample01.controller.domain.Subject;
-import nst.springboot.restexample01.controller.service.SubjectService;
+import nst.springboot.restexample01.service.SubjectService;
 import nst.springboot.restexample01.dto.SubjectDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ public class SubjectController {
         this.subjectService = subjectService;
     }
 
-    @PostMapping("/save")
+    @PostMapping()
     public ResponseEntity<SubjectDto> save(@RequestParam("Subject Name") String nameSubject,
                                            @RequestParam("ESPB") int espb,
                                            @RequestParam("Department Name") String nameDepartment) throws Exception {
@@ -52,7 +51,7 @@ public class SubjectController {
     }
 
     @GetMapping("/department/{id}")
-    public ResponseEntity<List<SubjectDto>> getByDepartmentName(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity<List<SubjectDto>> getByDepartmentId(@PathVariable("id") Long id) throws Exception {
         List<SubjectDto> subjects = subjectService.findByDepartment(id);
         return new ResponseEntity<>(subjects, HttpStatus.OK);
     }

@@ -1,6 +1,6 @@
 package nst.springboot.restexample01.controller;
 
-import nst.springboot.restexample01.controller.service.AcademicTitleHistoryService;
+import nst.springboot.restexample01.service.AcademicTitleHistoryService;
 import nst.springboot.restexample01.dto.AcademicTitleHistoryDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class AcademicTitleHistoryController {
         return new ResponseEntity<>(academicTitleHistoryList, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping()
     public ResponseEntity<String> delete(@RequestParam("ID") Long id) throws Exception {
         academicTitleHistoryService.delete(id);
         return new ResponseEntity<>("Record removed!", HttpStatus.OK);
