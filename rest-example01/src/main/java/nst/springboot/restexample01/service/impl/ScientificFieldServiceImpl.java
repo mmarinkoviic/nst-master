@@ -35,7 +35,11 @@ public class ScientificFieldServiceImpl implements ScientificFieldService {
         if(check.isPresent()){
             throw new EntityExistsException("Scientific field " + name + " already exist!");
         }
-        ScientificField scientificField = new ScientificField(scientificFieldRepository.findMaxId()+1,name);
+        Long id = 0L;
+        if(scientificFieldRepository.findMaxId() != null){
+            id = scientificFieldRepository.findMaxId();
+        }
+        ScientificField scientificField = new ScientificField(id +1,name);
         scientificField = scientificFieldRepository.save(scientificField);
         return scientificFieldConverter.toDto(scientificField);
 

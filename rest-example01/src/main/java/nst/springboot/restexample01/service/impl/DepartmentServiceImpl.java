@@ -67,7 +67,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         if (dept.isPresent()) {
             throw new EntityExistsException("Department already exist!");
         } else {
-            Department department= new Department(departmentRepository.findMaxId()+1,name);
+            Long id = 0L;
+            if(departmentRepository.findMaxId() != null){
+                id = departmentRepository.findMaxId();
+            }
+            Department department= new Department(id+1,name);
             department = departmentRepository.save(department);
             return departmentConverter.toDto(department);
         }

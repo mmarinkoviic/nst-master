@@ -47,7 +47,11 @@ public class ManagementServiceImpl implements ManagementService {
 
         if(!startDate.isEqual(LocalDate.now()) && !startDate.isBefore(LocalDate.now())){throw new IllegalArgumentException("Date is not valid!");}
 
-        Management management = new Management(managementRepository.findMaxId() + 1, department, member, role, startDate,null);
+        Long id = 0L;
+        if(managementRepository.findMaxId() != null){
+            id = managementRepository.findMaxId();
+        }
+        Management management = new Management(id + 1, department, member, role, startDate,null);
 
        if(role.equals("handler")){
            Optional<Management> secretary = managementRepository.findByEndDateIsNullAndDepartmentIdAndRole(departmentId, "secretary");
