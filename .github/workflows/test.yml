@@ -6,15 +6,9 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-
-
 jobs:
   build:
-
-
     runs-on: ubuntu-latest
-
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -24,4 +18,4 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        run: mvn -B package -Ptest-h2 --file rest-example01/pom.xml
+        run: mvn -B package --file rest-example01/pom.xml
