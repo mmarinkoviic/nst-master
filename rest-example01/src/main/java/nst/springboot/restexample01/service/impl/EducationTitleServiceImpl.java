@@ -38,7 +38,11 @@ public class EducationTitleServiceImpl implements EducationTitleService {
         if(check.isPresent()){
             throw new EntityExistsException("Education title " + name + " already exist!");
         }
-        EducationTitle educationTitle = new EducationTitle(educationTitleRepository.findMaxId()+1,name);
+        Long id = 0L;
+        if(educationTitleRepository.findMaxId() != null){
+            id = educationTitleRepository.findMaxId();
+        }
+        EducationTitle educationTitle = new EducationTitle(id +1,name);
         educationTitle = educationTitleRepository.save(educationTitle);
         return educationTitleConverter.toDto(educationTitle);
     }

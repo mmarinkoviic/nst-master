@@ -42,8 +42,11 @@ public class SubjectServiceImpl implements SubjectService {
         }else{
             Department dep = departmentRepository.findByNameIgnoreCase(nameDepartment)
                     .orElseThrow(() -> new EntityNotFoundException("Department with name " + nameDepartment + " not found."));
-
-            Subject subj = new Subject(subjectRepository.findMaxId()+1,nameSubject,espb,dep);
+            Long id = 0L;
+            if(subjectRepository.findMaxId() != null){
+                id = subjectRepository.findMaxId();
+            }
+            Subject subj = new Subject(id +1,nameSubject,espb,dep);
             subjectRepository.save(subj);
             return subjectConverter.toDto(subj);
         }

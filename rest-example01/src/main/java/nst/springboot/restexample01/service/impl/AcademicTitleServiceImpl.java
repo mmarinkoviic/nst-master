@@ -35,7 +35,11 @@ public class AcademicTitleServiceImpl implements AcademicTitleService {
         if(check.isPresent()){
             throw new EntityExistsException("Academic title " + name + " already exist!");
         }
-        AcademicTitle academicTitle = new AcademicTitle(academicTitleRepository.findMaxId()+1,name);
+        Long id = 0L;
+        if(academicTitleRepository.findMaxId() != null){
+            id = academicTitleRepository.findMaxId();
+        }
+        AcademicTitle academicTitle = new AcademicTitle(id +1,name);
         academicTitle = academicTitleRepository.save(academicTitle);
         return academicTitleConverter.toDto(academicTitle);
     }
